@@ -1,0 +1,25 @@
+Package: pubmedRecords
+Type: Package
+Title: Get and format NCBI PubMed records for text mining
+Version: 0.1.0
+Date: 2016-08-07
+Author: Peter Kamerman <peter.kamerman@gmail.com>
+Maintainer: Peter Kamerman <peter.kamerman@gmail.com>
+URL: https://github.com/kamermanpr/pubmedRecords
+BugReports: https://github.com/kamermanpr/pubmedRecords/issues
+Description: This package provides tools to download records from the NCBI PubMed database based on user input, and to format the data in a form that can be used by the text mining package ’tm’. 
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 5.0.1
+Depends: 
+	R (>= 3.3.1),
+Imports: 
+	xml2,
+    	dplyr,
+	purrr,
+	tibble,
+    	stringr,
+    	magrittr
+Suggests: 
+    	testthat
