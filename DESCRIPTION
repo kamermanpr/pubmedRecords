@@ -15,11 +15,14 @@ RoxygenNote: 5.0.1
 Depends: 
 	R (>= 3.3.1),
 Imports: 
-	xml2,
-    	dplyr,
+    	countrycode,
+        dplyr,
+	magrittr,
 	purrr,
 	tibble,
+	tidyr,
     	stringr,
-    	magrittr
+	xml2
 Suggests: 
-    	testthat
+	rentrez,
+	testthat
