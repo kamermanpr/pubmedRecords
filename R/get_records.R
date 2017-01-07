@@ -35,20 +35,11 @@
 #' \item{author_node}{Character string specifying the XPath for each entry.}
 #' \item{pmid}{PubMed unique identification code for each entry \emph{(class: integer)}.}
 #' \item{authors}{Character string specifying author name \emph{format: surname initials}.}
-#' \item{affiliation}{Character string specifying the affiliation(s) associated with each author for each entry.}
-#'}
+#' \item{affiliation}{Character string specifying the affiliation(s) associated with each author for each entry.}}
 #'
 #' @family related functions
 #'
-#' @seealso \code{\link[rentrez]{enterez_search}} and \code{\link[rentrez]{enterez_fetch}}
-#'
-#' @examples
-#' # Parse an xml file downloaded from PubMed
-#' ## Get PMIDs
-#' pmid_string <- xml2::read_xml(
-#' paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=Treede+RD[AUTH]&rettype=xml&retmax=1000')) %>%
-#' xml2::xml_find_all(., xpath = './/Id') %>%
-#' xml2::xml_integer(.)
+#' @seealso \code{\link[rentrez]{entrez_search}} and \code{\link[rentrez]{entrez_fetch}}
 #'
 #' @export
 get_records <- function(search_terms,
@@ -65,7 +56,6 @@ get_records <- function(search_terms,
     ############################################################
 
     #-- Determine how many articles are returned by the search terms -----#
-    search_terms <- 'Treede RD'
 
     # Add has_abstract logical
     if(has_abstract == TRUE) {
@@ -157,6 +147,10 @@ get_records <- function(search_terms,
     names(xml_record) <- rep('xml_record',
                              length(pubmed_query))
 
+    #-- Close connections ------------------------------------------------#
+
+    closeAllConnections()
+
     ############################################################
     #                                                          #
     #                Parse bibliographic data                  #
@@ -164,7 +158,7 @@ get_records <- function(search_terms,
     ############################################################
 
 
-    biblio_temp <- purrr::map_df(xml_record,
+    biblio_out <- purrr::map_df(xml_record,
                                  pubmedRecords::parse_bibliographics)
 
     ############################################################
@@ -173,6 +167,21 @@ get_records <- function(search_terms,
     #                                                          #
     ############################################################
 
-    affil_temp <- purrr::map_df(xml_record,
-                             pubmedRecords::parse_affiliation)
+    affil_out <- purrr::map_df(xml_record,
+                             pubmedRecords::parse_affiliations)
+
+    ############################################################
+    #                                                          #
+    #         Join bibliographic and affiliation data          #
+    #                                                          #
+    ############################################################
+
+    record_out <- biblio_out %>%
+        dplyr::left_join(affil_out,
+                         by = c('pmid', 'authors'))
+
+    #-- Output ----------------------------------------------------------------#
+
+    return(record_out)
+
 }
