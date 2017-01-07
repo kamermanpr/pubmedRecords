@@ -41,25 +41,15 @@ A long-format dataframe with the following columns:
 \item{author_node}{Character string specifying the XPath for each entry.}
 \item{pmid}{PubMed unique identification code for each entry \emph{(class: integer)}.}
 \item{authors}{Character string specifying author name \emph{format: surname initials}.}
-\item{affiliation}{Character string specifying the affiliation(s) associated with each author for each entry.}
-}
+\item{affiliation}{Character string specifying the affiliation(s) associated with each author for each entry.}}
 }
 \description{
 \code{get_records} fetches \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} records and stores the records in a tidy dataframe suitable for processing by the \pkg{tidytext} package.
 }
-\examples{
-# Parse an xml file downloaded from PubMed
-## Get PMIDs
-pmid_string <- xml2::read_xml(
-paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=Treede+RD[AUTH]&rettype=xml&retmax=1000')) \%>\%
-xml2::xml_find_all(., xpath = './/Id') \%>\%
-xml2::xml_integer(.)
-
-}
 \seealso{
-\code{\link[rentrez]{enterez_search}} and \code{\link[rentrez]{enterez_fetch}}
+\code{\link[rentrez]{entrez_search}} and \code{\link[rentrez]{entrez_fetch}}
 
-Other related.functions: \code{\link{parse_affiliation}},
+Other related.functions: \code{\link{parse_affiliations}},
   \code{\link{parse_bibliographics}}
 }
 

@@ -1,36 +1,12 @@
 #' @title Extract bibliographic information from an PubMed xml record.
 #
-#' @description \code{parse_bibliographics} is used primarily as a utility function within \code{\link{get_records}}. It takes the xml output from an \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} database query and returns a dataframe of bibliographics information for each \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} journal article entry returned by the query.
+#' @description \code{parse_bibliographics} is used primarily as a utility function within \code{\link{get_records}}. It takes the xml output from an \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} database query and returns a dataframe of bibliographic information for each \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} record returned by the query.
 #'
-#' @param record The xml output from an \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} database query. Typically the database query is specified in the \emph{terms} parameter of the \code{\link{get_records}} function, and the downloaded xml output returned by the query is passed to \code{parse_bibliographics} for parsing. The parsed bibliographic data are then incorporated into the dataframe output of \code{\link{get_records}}. However, any xml PubMed query may be passed to the function independently of \code{\link{get_records}}, including xml files downloaded from \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} and unparsed results returned by \code{\link[rentrez]{entrez_fetch}}.
-#'
-#' @importFrom magrittr %>%
+#' @param record The xml output from an \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} database query. Typically the database query is specified in the \emph{terms} parameter of the \code{\link{get_records}} function, and the downloaded xml output returned by the query is passed to \code{parse_bibliographics} for parsing. The parsed bibliographic data are then incorporated into the dataframe output of \code{\link{get_records}}. However, any xml-format PubMed query may be passed to the function independently of \code{\link{get_records}}, including xml files downloaded from \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} and unparsed results returned by \code{\link[rentrez]{entrez_fetch}}.
 #'
 #' @family related functions
 #'
-#' @seealso \code{\link[rentrez]{enterez_search}} and \code{\link[rentrez]{enterez_fetch}}
-#'
-#' @examples
-#' # Parse an xml file downloaded from PubMed
-#' ## Get PMIDs
-#' pmid_string <- xml2::read_xml(
-#' paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=Treede+RD[AUTH]&rettype=xml&retmax=1000')) %>%
-#' xml2::xml_find_all(., xpath = './/Id') %>%
-#' xml2::xml_integer(.)
-#' ## Construct PubMed eFetch query
-#' url <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=', paste(pmid_string, collapse = ','), '&retmode=xml')
-#' ## Download xml record
-#' xml_record <- xml2::read_xml(url)
-#' ## Parse record
-#' parse_bibliographics(record = xml_record)
-#'
-#' # Parse an xml file returned by rentrez::entrez_fetch
-#' ## Get PMIDs
-#' pmid_string <- rentrez::entrez_search(db = 'pubmed', term = 'Treede RD[AUTH]', retmod = 'xml', retmax = 1000)$ids
-#' ## Fetch records
-#' rentrez_record <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=', paste(pmid_string, collapse = ','), '&retmode=xml')
-#' ## Parse record
-#' parse_bibliographics(record = rentrez_record)
+#' @seealso \code{\link[rentrez]{entrez_search}} and \code{\link[rentrez]{entrez_fetch}}
 #'
 #' @export
 parse_bibliographics <- function(record) {
@@ -60,9 +36,9 @@ parse_bibliographics <- function(record) {
 
     #-- Forename ---------------------------------------------------------#
 
-    forename_path <- xml2::xml_path(
-            xml2::xml_find_all(record,
-                               './/ForeName'))
+    #forename_path <- xml2::xml_path(
+     #       xml2::xml_find_all(record,
+      #                         './/ForeName'))
 
     #-- Initials ---------------------------------------------------------#
 
@@ -90,9 +66,9 @@ parse_bibliographics <- function(record) {
 
     #-- Issue ------------------------------------------------------------#
 
-    issue_path <- xml2::xml_path(
-        xml2::xml_find_all(record,
-                           './/Issue'))
+    #issue_path <- xml2::xml_path(
+     #   xml2::xml_find_all(record,
+      #                     './/Issue'))
 
     #-- Year -------------------------------------------------------------#
 
@@ -157,17 +133,17 @@ parse_bibliographics <- function(record) {
 
     #-- Forename ---------------------------------------------------------#
 
-    forename <- c() # empty vector for forename
+    #forename <- c() # empty vector for forename
 
-    for(i in 1:length(forename_path)) {
-        forename[[i]] <- stringr::str_to_lower(
-            xml2::xml_text(
-                xml2::xml_find_first(record,
-                                     forename_path[[i]])))
-    }
+    #for(i in 1:length(forename_path)) {
+     #   forename[[i]] <- stringr::str_to_lower(
+      #      xml2::xml_text(
+       #         xml2::xml_find_first(record,
+        #                             forename_path[[i]])))
+    #}
 
     # Retain first name only
-    forename <- stringr::str_extract(forename, '^\\w+')
+    #forename <- stringr::str_extract(forename, '^\\w+')
 
     #-- Title ------------------------------------------------------------#
 
@@ -243,26 +219,26 @@ parse_bibliographics <- function(record) {
 
     #-- issue ---------------------------------------------------------#
 
-    issue <- c() # empty vector for issue
+    #issue <- c() # empty vector for issue
 
-    for(i in 1:length(issue_path)) {
-        issue[[i]] <- stringr::str_to_lower(
-            xml2::xml_text(
-                xml2::xml_find_first(record,
-                                     issue_path[[i]])))
-    }
+    #for(i in 1:length(issue_path)) {
+     #   issue[[i]] <- stringr::str_to_lower(
+      #      xml2::xml_text(
+       #         xml2::xml_find_first(record,
+        #                             issue_path[[i]])))
+    #}
 
     # Make article marker for joins
-    issue_path2 <- c() # empty vector for 'trimmed' issue path
+    #issue_path2 <- c() # empty vector for 'trimmed' issue path
 
-    for(i in 1:length(issue_path)) {
-        issue_path2[[i]] <- stringr::str_extract(issue_path[[i]],
-                                                 '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
-    }
+    #for(i in 1:length(issue_path)) {
+     #   issue_path2[[i]] <- stringr::str_extract(issue_path[[i]],
+      #                                           '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
+    #}
 
     # Make dataframe
-    issue2 <- dplyr::data_frame(article_node = issue_path2,
-                                issue = issue)
+    #issue2 <- dplyr::data_frame(article_node = issue_path2,
+     #                           issue = issue)
 
     #-- year ---------------------------------------------------------#
 
@@ -446,8 +422,8 @@ parse_bibliographics <- function(record) {
                          by = 'article_node') %>%
         dplyr::left_join(volume2,
                          by = 'article_node') %>%
-        dplyr::left_join(issue2,
-                         by = 'article_node') %>%
+        #dplyr::left_join(issue2,
+         #                by = 'article_node') %>%
         dplyr::left_join(year2,
                          by = 'article_node') %>%
         dplyr::left_join(doi2,
@@ -456,16 +432,30 @@ parse_bibliographics <- function(record) {
                          by = 'article_node')
 
     # Join 'long' dataframes
-    biblio_long <-
-
+    biblio_long <- dplyr::data_frame(article_node = node,
+                                     pmid = pmid,
+                                     authors = authors,
+                                     surname = surname,
+                                     initials = initials)#,
+                                     #forename = forename)
 
     # Join 'long' and 'short' dataframes
-    biblio_temp <- biblio_long %>%
-        dplyr::left_join(,
-                         by = 'pmid')
-
+    biblio_out <- biblio_long %>%
+        dplyr::left_join(biblio_short) %>%
+        dplyr::select(authors,
+                      surname,
+                      initials,
+                      #forename,
+                      title,
+                      journal,
+                      volume,
+                      #issue,
+                      year,
+                      pmid,
+                      doi,
+                      abstract)
     #-- Output -----------------------------------------------------------#
 
-    biblio_temp
+    return(biblio_out)
 
 }

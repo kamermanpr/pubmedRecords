@@ -7,38 +7,15 @@
 parse_bibliographics(record)
 }
 \arguments{
-\item{record}{The xml output from an \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} database query. Typically the database query is specified in the \emph{terms} parameter of the \code{\link{get_records}} function, and the downloaded xml output returned by the query is passed to \code{parse_bibliographics} for parsing. The parsed bibliographic data are then incorporated into the dataframe output of \code{\link{get_records}}. However, any xml PubMed query may be passed to the function independently of \code{\link{get_records}}, including xml files downloaded from \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} and unparsed results returned by \code{\link[rentrez]{entrez_fetch}}.}
+\item{record}{The xml output from an \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} database query. Typically the database query is specified in the \emph{terms} parameter of the \code{\link{get_records}} function, and the downloaded xml output returned by the query is passed to \code{parse_bibliographics} for parsing. The parsed bibliographic data are then incorporated into the dataframe output of \code{\link{get_records}}. However, any xml-format PubMed query may be passed to the function independently of \code{\link{get_records}}, including xml files downloaded from \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} and unparsed results returned by \code{\link[rentrez]{entrez_fetch}}.}
 }
 \description{
-\code{parse_bibliographics} is used primarily as a utility function within \code{\link{get_records}}. It takes the xml output from an \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} database query and returns a dataframe of bibliographics information for each \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} journal article entry returned by the query.
-}
-\examples{
-# Parse an xml file downloaded from PubMed
-## Get PMIDs
-pmid_string <- xml2::read_xml(
-paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=Treede+RD[AUTH]&rettype=xml&retmax=1000')) \%>\%
-xml2::xml_find_all(., xpath = './/Id') \%>\%
-xml2::xml_integer(.)
-## Construct PubMed eFetch query
-url <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=', paste(pmid_string, collapse = ','), '&retmode=xml')
-## Download xml record
-xml_record <- xml2::read_xml(url)
-## Parse record
-parse_bibliographics(record = xml_record)
-
-# Parse an xml file returned by rentrez::entrez_fetch
-## Get PMIDs
-pmid_string <- rentrez::entrez_search(db = 'pubmed', term = 'Treede RD[AUTH]', retmod = 'xml', retmax = 1000)$ids
-## Fetch records
-rentrez_record <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=', paste(pmid_string, collapse = ','), '&retmode=xml')
-## Parse record
-parse_bibliographics(record = rentrez_record)
-
+\code{parse_bibliographics} is used primarily as a utility function within \code{\link{get_records}}. It takes the xml output from an \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} database query and returns a dataframe of bibliographic information for each \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} record returned by the query.
 }
 \seealso{
-\code{\link[rentrez]{enterez_search}} and \code{\link[rentrez]{enterez_fetch}}
+\code{\link[rentrez]{entrez_search}} and \code{\link[rentrez]{entrez_fetch}}
 
 Other related.functions: \code{\link{get_records}},
-  \code{\link{parse_affiliation}}
+  \code{\link{parse_affiliations}}
 }
 
