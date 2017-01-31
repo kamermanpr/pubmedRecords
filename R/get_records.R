@@ -1,6 +1,6 @@
 #' @title Get PubMed records.
 #
-#' @description \code{get_records} fetches \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} records and stores the records in a tidy dataframe suitable for processing by the \pkg{tidytext} package.
+#' @description \code{get_records} fetches \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} records and stores the records in a tidy data format suitable for processing using tools form the \emph{tidyverse}.
 #'
 #' @param search_terms A character string of terms that define the scope of the PubMed database query. Boolean operators \emph{(AND, OR, NOT)} and search field tags may be used to create more complex search criteria. Commonly used search fields tags include:
 #' \describe{
@@ -55,6 +55,13 @@ get_records <- function(search_terms,
     #                                                          #
     ############################################################
 
+    #search_terms <- "Pain[TA]"
+    #min_date <- '1975/03'
+    #max_date <- '1979/12'
+    #has_abstract <- TRUE
+    #pub_type <- 'journal article'
+    #date_type <- 'PDAT'
+
     #-- Determine how many articles are returned by the search terms -----#
 
     # Add has_abstract logical
@@ -68,7 +75,7 @@ get_records <- function(search_terms,
                             search_terms, '&datetype=',
                             date_type, '&mindate=',
                             min_date, '&maxdate=',
-                            max_date, '&rettype=Count')
+                            max_date, '&retmode=xml&rettype=Count')
 
     # Remove spaces from search terms
     search_string <- stringr::str_replace_all(search_string,
@@ -77,7 +84,7 @@ get_records <- function(search_terms,
 
     # Get record count
     record_count <- xml2::read_xml(search_string) %>%
-        xml2::xml_find_first(.,
+        xml2::xml_find_all(.,
                            xpath = './/Count') %>%
         xml2::xml_text(.) %>%
         as.numeric()
@@ -159,7 +166,7 @@ get_records <- function(search_terms,
 
 
     biblio_out <- purrr::map_df(xml_record,
-                                 pubmedRecords::parse_bibliographics)
+                                pubmedRecords::parse_bibliographics)
 
     ############################################################
     #                                                          #
