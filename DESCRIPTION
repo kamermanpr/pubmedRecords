@@ -1,13 +1,13 @@
 Package: pubmedRecords
 Type: Package
-Title: Get and format NCBI PubMed records for text mining
+Title: Get and format NCBI PubMed records and their associated bibliometrics as tidy data
 Version: 0.1.0
 Date: 2016-08-07
 Author: Peter Kamerman <peter.kamerman@gmail.com>
 Maintainer: Peter Kamerman <peter.kamerman@gmail.com>
 URL: https://github.com/kamermanpr/pubmedRecords
 BugReports: https://github.com/kamermanpr/pubmedRecords/issues
-Description: This package provides tools to download records from the NCBI PubMed database based on user input, and to format the data in a form that can be used by the text mining package ’tm’. 
+Description: This package provides tools to download records from the NCBI PubMed database based on user-specified search criteria, and to add commonly used bibliometrics for the returned records. The output is always in a tidy data format, making it easy to analyse the data using tools from the 'tidyverse'. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -19,9 +19,11 @@ Imports:
         dplyr,
 	magrittr,
 	purrr,
+	rAltmetric,
+	rcrossref,
+	stringr,
 	tibble,
 	tidyr,
-    	stringr,
 	xml2
 Suggests: 
 	rentrez,
