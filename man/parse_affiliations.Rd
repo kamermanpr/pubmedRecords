@@ -2,25 +2,25 @@
 % Please edit documentation in R/parse_affiliations.R
 \name{parse_affiliations}
 \alias{parse_affiliations}
-\title{Extract the name of the country (along with its geographical region and continent) listed in the primary affiliation of the first-author of each unique PubMed record.}
+\title{Extract the name of the country (along with its geographical region and continent) listed in the primary affiliation of the first-author of PubMed records.}
 \usage{
 parse_affiliations(record)
 }
 \arguments{
-\item{record}{The xml output from an PubMed database query. Typically the database query is specified in the \emph{terms} parameter of the \code{\link{get_records}} function, and the downloaded xml output returned by the query is passed to \code{parse_affiliation} for parsing. The parsed affiliation data are then incorporated into the dataframe output of \code{\link{get_records}}. However, PubMed query data in the form of an xml file downloaded from PubMed and results returned by the \code{\link[rentrez]{entrez_fetch}} function from the \pkg{rentrez} package may be passed to the function independently of \code{\link{get_records}}.}
+\item{record}{The xml output from an PubMed database query. Typically the database query is specified in the \emph{terms} parameter of the \code{\link{get_records}} function, and the downloaded xml output returned by the query is passed to \code{parse_affiliations} for parsing. The affiliation data are then incorporated into the dataframe output of \code{\link{get_records}}. However, PubMed query data in the form of an xml file downloaded from PubMed and results returned by the \code{\link[rentrez]{entrez_fetch}} function from the \pkg{rentrez} package may be passed to the function independently of \code{\link{get_records}}.}
 }
 \value{
-Returns a long-format dataframe with the following columns:
+Returns a dataframe with the following columns:
 \describe{
 \item{pmid}{PubMed unique identification code for each entry \emph{(class: integer)}.}
 \item{authors}{Character string specifying author name \emph{format: surname initials}.}
 \item{country_name}{Character string specifying the name of the country listed under the primary affiliation of the first-author. Returns \code{NA} if no country name is included in the affiliation data.}
 \item{state_code}{Character string specifying the two-letter state identification code listed under the primary affiliation of the first-author, when the country is the USA. Returns \code{NA} for countries other than the USA, and when no state is included in US-based affiliations.}
-\item{continent}{Character string specifying the continent a country belongs to as defined in the World Bank Development Indicators. Returns \code{NA} if no country name is included in the affiliation data.}
-\item{region}{Character string specifying the geographical region a country belongs to as defined in the World Bank Development Indicators. Returns \code{NA} if no country name is included in the affiliation data.}}
+\item{continent}{Character string specifying the continent a country is in, as defined in the World Bank Development Indicators. Returns \code{NA} if no country name is included in the affiliation data.}
+\item{region}{Character string specifying the geographical region a country is in, as defined in the World Bank Development Indicators. Returns \code{NA} if no country name is included in the affiliation data.}}
 }
 \description{
-\code{parse_affiliation} is used primarily as a utility function within \code{\link{get_records}}. It takes the xml output from an \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} database query and returns a dataframe with the name of the country (and state code if the USA) listed under the primary affiliation of the first-author of each PubMed entry returned by the query. The extraction of country names is based on full country names and country ISO-3 short name codes (and UK). In addition, the continent and region assignment of the country, based on \href{http://data.worldbank.org/data-catalog/world-development-indicators}{World Bank Development Indicators}, is also returned. The region and continent data are generated using the \code{\link[countrycode]{countrycode}} function from the \pkg{countrycode} package. The country/continental/regional distribution data are useful for assessing the geographical distribution of scientific outputs.
+\code{parse_affiliation} is typically called within \code{\link{get_records}}. It takes the xml output from an \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} database query and returns a dataframe with the name of the country (and state code if the USA) listed under the primary affiliation of the first-author of each PubMed entry returned by the query. The country information is supplemented with information on the continent and geographical region the country is located in. These data are useful for assessing the geographical distribution of scientific outputs. The extraction of country names is based on English full country names and country ISO-3 short name codes (and UK). In addition, the continent and geographical region assignment of the country, based on \href{http://data.worldbank.org/data-catalog/world-development-indicators}{World Bank Development Indicators}, is also returned. The region and continent data are generated using the \code{\link[countrycode]{countrycode}} function from the \pkg{countrycode} package.
 }
 \examples{
 # Get publication record of Prof RD Treede from a downloaded PubMed xml file

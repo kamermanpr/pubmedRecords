@@ -2,7 +2,7 @@
 % Please edit documentation in R/parse_bibliographics.R
 \name{parse_bibliographics}
 \alias{parse_bibliographics}
-\title{Extract bibliographic information from an PubMed xml record.}
+\title{Extract bibliographic information from PubMed records.}
 \usage{
 parse_bibliographics(record)
 }
@@ -10,11 +10,9 @@ parse_bibliographics(record)
 \item{record}{The xml output from an \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} database query. Typically the database query is specified in the \emph{terms} parameter of the \code{\link{get_records}} function, and the downloaded xml output returned by the query is passed to \code{parse_bibliographics} for parsing. The parsed bibliographic data are then incorporated into the dataframe output of \code{\link{get_records}}. However, any xml-format PubMed query may be passed to the function independently of \code{\link{get_records}}, including xml files downloaded from \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} and unparsed results returned by \code{\link[rentrez]{entrez_fetch}}.}
 }
 \description{
-\code{parse_bibliographics} is used primarily as a utility function within \code{\link{get_records}}. It takes the xml output from an \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} database query and returns a dataframe of bibliographic information for each \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} record returned by the query.
+\code{parse_bibliographics} is typically called by \code{\link{get_records}}. It takes the xml output from an \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} database query and returns a dataframe of bibliographic information for each \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} record returned by the query.
 }
 \seealso{
-\code{\link[rentrez]{entrez_search}} and \code{\link[rentrez]{entrez_fetch}}
-
 Other related.functions: \code{\link{get_records}},
   \code{\link{parse_affiliations}}
 }

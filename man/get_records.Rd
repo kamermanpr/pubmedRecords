@@ -44,7 +44,7 @@ A long-format dataframe with the following columns:
 \item{affiliation}{Character string specifying the affiliation(s) associated with each author for each entry.}}
 }
 \description{
-\code{get_records} fetches \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} records and stores the records in a tidy dataframe suitable for processing by the \pkg{tidytext} package.
+\code{get_records} fetches \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} records and stores the records in a tidy data format suitable for processing using tools form the \emph{tidyverse}.
 }
 \seealso{
 \code{\link[rentrez]{entrez_search}} and \code{\link[rentrez]{entrez_fetch}}
