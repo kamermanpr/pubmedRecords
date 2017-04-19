@@ -1,6 +1,6 @@
-^packrat/
 ^\.Rprofile$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^data-raw$
 ^tests/
+^\.travis\.yml$
