@@ -42,6 +42,7 @@ parse_affiliations <- function(record) {
     #                                                          #
     ############################################################
 
+    #record <- xml_record[[1]]
     #-- Affliiations -----------------------------------------------------#
 
     affil_path <- xml2::xml_path(
@@ -159,7 +160,8 @@ parse_affiliations <- function(record) {
         dplyr::mutate(count = stringr::str_replace_na(count),
                       count = stringr::str_replace(count,
                                                    'NA',
-                                                   0))
+                                                   '0')) %>%
+        dplyr::mutate(count = as.numeric(count))
 
     if(length(affil) > 0) {
         # Expand pmid to length 'affil'
@@ -285,21 +287,38 @@ parse_affiliations <- function(record) {
                             length = nrow(counter))
 
         # Make into a dataframe
-        affil_country <- dplyr::data_frame(pmid = as.numeric(pmid),
-                                           authors =  as.character(authors),
-                                           country_name = as.character(country_name),
-                                           country_iso3 = as.character(country_iso3),
-                                           state_name = as.character(state_name),
-                                           state_code = as.character(state_code),
-                                           region = as.character(region),
-                                           continent = as.character(continent))
+
+        empty_as_na <- function(x) {
+            ifelse(as.character(x) != "",
+                   yes  = x,
+                   no = NA)
+            }
+
+        affil_country <- dplyr::data_frame(pmid = pmid,
+                                           authors = authors,
+                                           country_name = country_name,
+                                           country_iso3 = country_iso3,
+                                           state_name = state_name,
+                                           state_code = state_code,
+                                           region = region,
+                                           continent = continent) %>%
+            dplyr::mutate_each(funs(empty_as_na)) %>%
+            dplyr::mutate(pmid = as.character(pmid),
+                          authors =  as.character(authors),
+                          country_name = as.character(country_name),
+                          country_iso3 = as.character(country_iso3),
+                          state_name = as.character(state_name),
+                          state_code = as.character(state_code),
+                          region = as.character(region),
+                          continent = as.character(continent)) %>%
+            dplyr::mutate_each(funs(trimws))
     }
 
     #-- Output ----------------------------------------------------------------#
 
-   affil_out <- affil_country %>%
+    affil_out <- affil_country %>%
         dplyr::select(-state_name)
 
-   return(affil_out)
+    return(affil_out)
 
 }

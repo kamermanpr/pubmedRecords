@@ -27,4 +27,3 @@ parse_affiliations(foo)
 parse_bibliographics(foo)
 
 }
-

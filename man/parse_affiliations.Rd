@@ -42,7 +42,6 @@ parse_affiliations(baz)}
 
 }
 \seealso{
-Other related.functions: \code{\link{get_records}},
+Other related functions: \code{\link{get_records}},
   \code{\link{parse_bibliographics}}
 }
-

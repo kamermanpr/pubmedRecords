@@ -55,6 +55,7 @@ get_records <- function(search_terms,
     #                                                          #
     ############################################################
 
+    #library(tidyverse)
     #search_terms <- "Pain[TA]"
     #min_date <- '1975/03'
     #max_date <- '1979/12'
@@ -184,8 +185,8 @@ get_records <- function(search_terms,
     ############################################################
 
     record_out <- biblio_out %>%
-        dplyr::left_join(affil_out,
-                         by = c('pmid', 'authors'))
+        dplyr::left_join(affil_out) %>%
+        dplyr::mutate(pmid = as.numeric(pmid))
 
     #-- Output ----------------------------------------------------------------#
 

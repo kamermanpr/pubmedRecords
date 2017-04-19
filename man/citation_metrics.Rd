@@ -34,4 +34,3 @@ Returns a dataframe with all the columns of the input dataframe, plus the follow
 \seealso{
 \code{\link{get_records}} for generating input dataframe.
 }
-

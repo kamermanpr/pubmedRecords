@@ -15,6 +15,7 @@ parse_bibliographics <- function(record) {
     #                                                          #
     ############################################################
 
+    #record <- xml_record[[1]]
     #-- Surname ----------------------------------------------------------#
 
     surname_path <- xml2::xml_path(
@@ -467,7 +468,8 @@ parse_bibliographics <- function(record) {
         dplyr::mutate(count = stringr::str_replace_na(count),
                       count = stringr::str_replace(count,
                                                    'NA',
-                                                   0))
+                                                   '0')) %>%
+        dplyr::mutate(count = as.numeric(count))
 
     # Expand pmid to length 'surname'
     pmid <- purrr::map2(.x = counter$pmid,
@@ -518,6 +520,13 @@ parse_bibliographics <- function(record) {
                                      authors = authors)
 
     # Join 'long' and 'short' dataframes
+
+    empty_as_na <- function(x) {
+        ifelse(as.character(x) != "",
+               yes  = x,
+               no = NA)
+        }
+
     biblio_out <- biblio_long %>%
         dplyr::left_join(biblio_short) %>%
         dplyr::select(authors,
@@ -530,6 +539,7 @@ parse_bibliographics <- function(record) {
                       pmid,
                       doi,
                       abstract) %>%
+        dplyr::mutate_each(funs(empty_as_na)) %>%
         dplyr::mutate(authors = as.character(authors),
                       title = as.character(title),
                       journal = as.character(journal),
@@ -537,9 +547,10 @@ parse_bibliographics <- function(record) {
                       volume = as.character(volume),
                       year_published = as.numeric(year_published),
                       year_online = as.numeric(year_online),
-                      pmid = as.numeric(pmid),
+                      pmid = as.character(pmid),
                       doi = as.character(doi),
-                      abstract = as.character(abstract))
+                      abstract = as.character(abstract)) %>%
+        dplyr::mutate_each(funs(trimws))
 
     #-- Output -----------------------------------------------------------#
 

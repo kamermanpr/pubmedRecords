@@ -49,7 +49,6 @@ A long-format dataframe with the following columns:
 \seealso{
 \code{\link[rentrez]{entrez_search}} and \code{\link[rentrez]{entrez_fetch}}
 
-Other related.functions: \code{\link{parse_affiliations}},
+Other related functions: \code{\link{parse_affiliations}},
   \code{\link{parse_bibliographics}}
 }
-
