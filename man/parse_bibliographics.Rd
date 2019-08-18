@@ -13,6 +13,6 @@ parse_bibliographics(record)
 \code{parse_bibliographics} is typically called by \code{\link{get_records}}. It takes the xml output from an \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} database query and returns a dataframe of bibliographic information for each \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} record returned by the query.
 }
 \seealso{
-Other related functions: \code{\link{get_records}},
-  \code{\link{parse_affiliations}}
+Other related functions: \code{\link{get_records}}
 }
+\concept{related functions}

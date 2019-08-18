@@ -2,7 +2,5 @@
 
 export(citation_metrics)
 export(get_records)
-export(parse_affiliations)
 export(parse_bibliographics)
-export(treede)
 importFrom(magrittr,"%>%")

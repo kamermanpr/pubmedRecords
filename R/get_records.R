@@ -1,6 +1,6 @@
 #' @title Get PubMed records.
 #
-#' @description \code{get_records} fetches \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} records and stores the records in a tidy data format suitable for processing using tools form the \emph{tidyverse}.
+#' @description \code{get_records} fetches \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} records and stores the records in a tidy data format suitable for processing using tools from the \emph{tidyverse}.
 #'
 #' @param search_terms A character string of terms that define the scope of the PubMed database query. Boolean operators \emph{(AND, OR, NOT)} and search field tags may be used to create more complex search criteria. Commonly used search fields tags include:
 #' \describe{
@@ -14,9 +14,11 @@
 #'
 #' For a full set of search fields tags: \href{https://www.ncbi.nlm.nih.gov/books/NBK3827/#_pubmedhelp_Search_Field_Descriptions_and_}{PubMed search field tags}. Note that the article publication type, date type, and date range are modified using the \code{pub_type}, \code{date_type}, \code{min_date} and \code{max_date} arguments below.
 #'
-#' @param has_abstract Logical specifying whether the returned records should be limited those with an abstract. The default value is \emph{TRUE}.
+#' @param has_abstract Logical specifying whether the returned records should be limited to those records that have an abstract. The default value is \emph{TRUE}.
 #'
 #' @param pub_type A character string specifying the type of publication the search must return. The default value is \emph{journal article}. For more information: \href{https://www.ncbi.nlm.nih.gov/books/NBK3827/#_pubmedhelp_Search_Field_Descriptions_and_}{PubMed search field tags}.
+#'
+#' @param api_key An API character string obtained from the users PubMed account.
 #'
 #' @param date_type A character string specifying the publication date type that is being specified in the search. Available values are:
 #' \describe{
@@ -42,9 +44,10 @@
 #' @seealso \code{\link[rentrez]{entrez_search}} and \code{\link[rentrez]{entrez_fetch}}
 #'
 #' @export
-get_records <- function(search_terms,
+get_records <- function(search_terms = '',
                         has_abstract = TRUE,
                         pub_type = 'journal article',
+                        api_key = '',
                         date_type = 'PDAT',
                         min_date = '1966/01/01',
                         max_date = format(Sys.Date(), '%Y/%m/%d')) {
@@ -54,14 +57,6 @@ get_records <- function(search_terms,
     #                       Query PubMed                       #
     #                                                          #
     ############################################################
-
-    #library(tidyverse)
-    #search_terms <- "Pain[TA]"
-    #min_date <- '1975/03'
-    #max_date <- '1979/12'
-    #has_abstract <- TRUE
-    #pub_type <- 'journal article'
-    #date_type <- 'PDAT'
 
     #-- Determine how many articles are returned by the search terms -----#
 
@@ -76,7 +71,8 @@ get_records <- function(search_terms,
                             search_terms, '&datetype=',
                             date_type, '&mindate=',
                             min_date, '&maxdate=',
-                            max_date, '&retmode=xml&rettype=Count')
+                            max_date, '&api_key=',
+                            api_key, '&retmode=xml&rettype=Count')
 
     # Remove spaces from search terms
     search_string <- stringr::str_replace_all(search_string,
@@ -91,7 +87,7 @@ get_records <- function(search_terms,
         as.numeric()
 
     # Throw a warning if number of records is > 200
-    if(record_count > 1000) {
+    if(record_count > 200) {
         print(paste(record_count, 'records will be retrieved. Downloading so many full records will take a long time, so go play some foosball.'))
     }
 
@@ -103,7 +99,8 @@ get_records <- function(search_terms,
                            search_terms, '&datetype=',
                            date_type, '&mindate=',
                            min_date, '&maxdate=',
-                           max_date, '&rettype=xml&retmax=',
+                           max_date, '&api_key=',
+                           api_key, '&rettype=xml&retmax=',
                            record_count)
 
     # Remove spaces from fetch terms
@@ -134,6 +131,12 @@ get_records <- function(search_terms,
                                     collapse = ',')
     }
 
+    # Remove NA
+    splitter_list <- purrr::map(.x = splitter_list,
+                    ~stringr::str_replace_all(.x,
+                                              pattern = ',NA',
+                                              replacement = ''))
+
     #-- Set api pubmed query strings -------------------------------------#
 
     # Create empty list of length 'record_ID'
@@ -144,6 +147,7 @@ get_records <- function(search_terms,
     for(i in seq_along(splitter_list)) {
         pubmed_query[[i]] <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=',
                                     splitter_list[[i]],
+                                    '&api_key=', api_key,
                                     '&retmode=xml')
     }
 
@@ -166,30 +170,14 @@ get_records <- function(search_terms,
     ############################################################
 
 
-    biblio_out <- purrr::map_df(xml_record,
-                                pubmedRecords::parse_bibliographics)
+    record_out <- purrr::map(xml_record,
+                             pubmedRecords::parse_bibliographics)
 
-    ############################################################
-    #                                                          #
-    #                 Parse affilitation data                  #
-    #                                                          #
-    ############################################################
-
-    affil_out <- purrr::map_df(xml_record,
-                             pubmedRecords::parse_affiliations)
-
-    ############################################################
-    #                                                          #
-    #         Join bibliographic and affiliation data          #
-    #                                                          #
-    ############################################################
-
-    record_out <- biblio_out %>%
-        dplyr::left_join(affil_out) %>%
-        dplyr::mutate(pmid = as.numeric(pmid))
+    record_out <- bind_rows(record_out)
 
     #-- Output ----------------------------------------------------------------#
 
     return(record_out)
 
 }
+

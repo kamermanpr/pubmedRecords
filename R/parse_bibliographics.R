@@ -13,9 +13,8 @@ parse_bibliographics <- function(record) {
     #                                                          #
     #                        Set xpaths                        #
     #                                                          #
-    ############################################################
+    ###########################################################
 
-    #record <- xml_record[[1]]
     #-- Surname ----------------------------------------------------------#
 
     surname_path <- xml2::xml_path(
@@ -72,9 +71,9 @@ parse_bibliographics <- function(record) {
 
     #-- PMID -------------------------------------------------------------#
 
-    pmid_path <- xml2::xml_path(
-        xml2::xml_find_all(record,
-                           ".//ArticleId[@IdType = 'pubmed']"))
+    # pmid_path <- xml2::xml_path(
+    #     xml2::xml_find_all(record,
+    #                        ".//ArticleId[@IdType = 'pubmed']"))
 
     #-- DOI --------------------------------------------------------------#
 
@@ -143,12 +142,12 @@ parse_bibliographics <- function(record) {
 
     for(i in 1:length(title_path)) {
         title_path2[[i]] <- stringr::str_extract(title_path[[i]],
-                                            '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
+                                                 '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
     }
 
     # Make dataframe
-    title2 <- dplyr::data_frame(article_node = title_path2,
-                                title = title)
+    title2 <- data.frame(article_node = title_path2,
+                         title = title)
 
     #-- Journal ----------------------------------------------------------#
 
@@ -174,8 +173,8 @@ parse_bibliographics <- function(record) {
     }
 
     # Make dataframe
-    journal2 <- dplyr::data_frame(article_node = journal_path2,
-                               journal = journal) %>%
+    journal2 <- data.frame(article_node = journal_path2,
+                           journal = journal) %>%
         dplyr::mutate(journal = stringr::str_replace_all(journal,
                                                          pattern = '[.]',
                                                          replacement = ''))
@@ -203,8 +202,8 @@ parse_bibliographics <- function(record) {
     }
 
     # Make dataframe
-    status2 <- dplyr::data_frame(article_node = status_path2,
-                                 publication_status = status) %>%
+    status2 <- data.frame(article_node = status_path2,
+                          publication_status = status) %>%
         # Edit text
         dplyr::mutate(publication_status = ifelse(is.na(publication_status),
                                                   yes = NA,
@@ -237,8 +236,8 @@ parse_bibliographics <- function(record) {
     }
 
     # Make dataframe
-    volume2 <- dplyr::data_frame(article_node = volume_path2,
-                                 volume = volume)
+    volume2 <- data.frame(article_node = volume_path2,
+                          volume = volume)
 
     #-- Year published -------------------------------------------------#
 
@@ -264,15 +263,15 @@ parse_bibliographics <- function(record) {
         }
 
         # Make dataframe
-        year_published2 <- dplyr::data_frame(article_node = year_published_path2,
-                                   year_published = year_published) %>%
+        year_published2 <- data.frame(article_node = year_published_path2,
+                                      year_published = year_published) %>%
             # Extract year
             dplyr::mutate(year_published = stringr::str_extract(year_published,
                                                pattern = '[0-9][0-9][0-9][0-9]'))
     } else {
         # Make empty dataframe
-        year_published2 <- dplyr::data_frame(article_node = as.character(),
-                                             year_published = as.numeric())
+        year_published2 <- data.frame(article_node = as.character(),
+                                      year_published = as.numeric())
     }
 
     #-- Year online ---------------------------------------------------#
@@ -299,12 +298,12 @@ parse_bibliographics <- function(record) {
         }
 
         # Make dataframe
-        year_online2 <- dplyr::data_frame(article_node = year_online_path2,
-                                          year_online = year_online)
+        year_online2 <- data.frame(article_node = year_online_path2,
+                                   year_online = year_online)
     } else {
         # Make empty dataframe
-        year_online2 <- dplyr::data_frame(article_node = as.character(),
-                                          year_online = as.numeric())
+        year_online2 <- data.frame(article_node = as.character(),
+                                   year_online = as.numeric())
     }
 
     #-- Pages ---------------------------------------------------------#
@@ -332,45 +331,45 @@ parse_bibliographics <- function(record) {
         }
 
         # Make dataframe
-        pages2 <- dplyr::data_frame(article_node = pages_path2,
-                                    pages = pages)
+        pages2 <- data.frame(article_node = pages_path2,
+                             pages = pages)
     } else {
         # Make empty dataframe
-        pages2 <- dplyr::data_frame(article_node = as.character(),
-                                  pages = as.character())
+        pages2 <- data.frame(article_node = as.character(),
+                             pages = as.character())
     }
 
     #-- PMID ---------------------------------------------------------#
 
-    if(length(pmid_path) > 0) {
-        # Define vector for pmid
-        pmid <- vector(mode = 'numeric',
-                       length = length(pmid_path))
-
-        for(i in 1:length(pmid_path)) {
-            pmid[[i]] <- xml2::xml_text(
-                xml2::xml_find_first(record,
-                                     pmid_path[[i]]))
-        }
-
-        # Make article marker for joins
-        ## Define vector for 'trimmed' pmid path
-        pmid_path2 <- vector(mode = 'character',
-                             length = length(pmid_path))
-
-        for(i in 1:length(pmid_path)) {
-            pmid_path2[[i]] <- stringr::str_extract(pmid_path[[i]],
-                                                    '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
-        }
-
-        # Make dataframe
-        pmid2 <- dplyr::data_frame(article_node = pmid_path2,
-                                   pmid = pmid)
-    } else {
-        # Make empty dataframe
-        pmid2 <- dplyr::data_frame(article_node = as.character(),
-                                   pmid = as.numeric())
-    }
+    # if(length(pmid_path) > 0) {
+    #     # Define vector for pmid
+    #     pmid <- vector(mode = 'numeric',
+    #                    length = length(pmid_path))
+    #
+    #     for(i in 1:length(pmid_path)) {
+    #         pmid[[i]] <- xml2::xml_text(
+    #             xml2::xml_find_first(record,
+    #                                  pmid_path[[i]]))
+    #     }
+    #
+    #     # Make article marker for joins
+    #     ## Define vector for 'trimmed' pmid path
+    #     pmid_path2 <- vector(mode = 'character',
+    #                          length = length(pmid_path))
+    #
+    #     for(i in 1:length(pmid_path)) {
+    #         pmid_path2[[i]] <- stringr::str_extract(pmid_path[[i]],
+    #                                                 '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
+    #     }
+    #
+    #     # Make dataframe
+    #     pmid2 <- data.frame(article_node = pmid_path2,
+    #                         pmid = pmid)
+    # } else {
+    #     # Make empty dataframe
+    #     pmid2 <- data.frame(article_node = as.character(),
+    #                         pmid = as.numeric())
+    # }
 
     #-- DOI ---------------------------------------------------------#
 
@@ -392,16 +391,16 @@ parse_bibliographics <- function(record) {
 
         for(i in 1:length(doi_path)) {
             doi_path2[[i]] <- stringr::str_extract(doi_path[[i]],
-                                                    '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
+                                                   '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
         }
 
         # Make dataframe
-        doi2 <- dplyr::data_frame(article_node = doi_path2,
-                                  doi = doi)
+        doi2 <- data.frame(article_node = doi_path2,
+                           doi = doi)
     } else {
         # Make empty dataframe
-        doi2 <- dplyr::data_frame(article_node = as.character(),
-                                  doi = as.character())
+        doi2 <- data.frame(article_node = as.character(),
+                           doi = as.character())
     }
 
     #-- Abstract ---------------------------------------------------------#
@@ -428,8 +427,8 @@ parse_bibliographics <- function(record) {
     }
 
     # Make dataframe
-    abstract2 <- dplyr::data_frame(article_node = abstract_path2,
-                                   abstract = abstract)
+    abstract2 <- data.frame(article_node = abstract_path2,
+                            abstract = abstract)
 
     ############################################################
     #                                                          #
@@ -449,36 +448,8 @@ parse_bibliographics <- function(record) {
             stringr::str_extract(value, '[0-9][0-9]?[0-9]?'))) %>%
         dplyr::arrange(order)
 
-
-    # Add xml path to PubmedArticle[???] to join with 'counter'
-    pmid_count <- pmid %>%
-        dplyr::tbl_df() %>%
-        dplyr::rename(pmid = value) %>%
-        dplyr::mutate(value = pmid_path) %>%
-        dplyr::mutate(value = stringr::str_extract(value,
-                                                   '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]'))
-
-    # Join counter to length 'pmid'
-    counter <- counter %>%
-        dplyr::right_join(pmid_count) %>%
-        tibble::rownames_to_column(var = 'order2') %>%
-        dplyr::mutate(order = order2) %>%
-        dplyr::rename(article_node = value) %>%
-        dplyr::select(article_node, pmid, count) %>%
-        dplyr::mutate(count = stringr::str_replace_na(count),
-                      count = stringr::str_replace(count,
-                                                   'NA',
-                                                   '0')) %>%
-        dplyr::mutate(count = as.numeric(count))
-
-    # Expand pmid to length 'surname'
-    pmid <- purrr::map2(.x = counter$pmid,
-                        .y = counter$count,
-                        .f = rep) %>%
-        unlist()
-
     # Expand article_node to length 'surname'
-    node <- purrr::map2(.x = counter$article_node,
+    node <- purrr::map2(.x = counter$value,
                         .y = counter$count,
                         .f = rep) %>%
         unlist()
@@ -492,14 +463,16 @@ parse_bibliographics <- function(record) {
     #-- Make into dataframe ----------------------------------------------#
 
     # Join 'short' dataframes (<=100 entries)
-    biblio_short <- pmid2 %>%
-        dplyr::left_join(title2,
-                         by = 'article_node') %>%
+    biblio_short <- title2 %>%
+        # dplyr::left_join(title2,
+        #                  by = 'article_node') %>%
         dplyr::left_join(journal2,
                          by = 'article_node') %>%
         dplyr::left_join(status2,
                          by = 'article_node') %>%
         dplyr::left_join(volume2,
+                         by = 'article_node') %>%
+        dplyr::left_join(pages2,
                          by = 'article_node') %>%
         dplyr::left_join(year_published2,
                          by = 'article_node') %>%
@@ -515,17 +488,14 @@ parse_bibliographics <- function(record) {
                                               no = year_published))
 
     # Join 'long' dataframes
-    biblio_long <- dplyr::data_frame(article_node = node,
-                                     pmid = pmid,
-                                     authors = authors)
+    biblio_long <- data.frame(article_node = node,
+                              authors = authors)
 
     # Join 'long' and 'short' dataframes
 
-    empty_as_na <- function(x) {
-        ifelse(as.character(x) != "",
-               yes  = x,
-               no = NA)
-        }
+    empty_as_na <- function(x){
+        ifelse(x == '', yes = NA, no = x)
+    }
 
     biblio_out <- biblio_long %>%
         dplyr::left_join(biblio_short) %>%
@@ -534,23 +504,25 @@ parse_bibliographics <- function(record) {
                       journal,
                       publication_status,
                       volume,
+                      pages,
                       year_published,
                       year_online,
-                      pmid,
                       doi,
                       abstract) %>%
-        dplyr::mutate_each(funs(empty_as_na)) %>%
         dplyr::mutate(authors = as.character(authors),
                       title = as.character(title),
                       journal = as.character(journal),
                       publication_status = as.character(publication_status),
                       volume = as.character(volume),
-                      year_published = as.numeric(year_published),
-                      year_online = as.numeric(year_online),
-                      pmid = as.character(pmid),
+                      pages = as.character(pages),
+                      year_published = as.character(year_published),
+                      year_online = as.character(year_online),
                       doi = as.character(doi),
                       abstract = as.character(abstract)) %>%
-        dplyr::mutate_each(funs(trimws))
+        dplyr::mutate_all(.funs = trimws) %>%
+        dplyr::mutate_all(.funs = empty_as_na) %>%
+        dplyr::mutate(year_published = as.numeric(year_published),
+                      year_online = as.numeric(year_online))
 
     #-- Output -----------------------------------------------------------#
 

@@ -4,9 +4,10 @@
 \alias{get_records}
 \title{Get PubMed records.}
 \usage{
-get_records(search_terms, has_abstract = TRUE, pub_type = "journal article",
-  date_type = "PDAT", min_date = "1966/01/01",
-  max_date = format(Sys.Date(), "\%Y/\%m/\%d"))
+get_records(search_terms = NULL, has_abstract = TRUE,
+  pub_type = "journal article", api_key = NULL, date_type = "PDAT",
+  min_date = "1966/01/01", max_date = format(Sys.Date(),
+  "\%Y/\%m/\%d"))
 }
 \arguments{
 \item{search_terms}{A character string of terms that define the scope of the PubMed database query. Boolean operators \emph{(AND, OR, NOT)} and search field tags may be used to create more complex search criteria. Commonly used search fields tags include:
@@ -21,9 +22,11 @@ get_records(search_terms, has_abstract = TRUE, pub_type = "journal article",
 
 For a full set of search fields tags: \href{https://www.ncbi.nlm.nih.gov/books/NBK3827/#_pubmedhelp_Search_Field_Descriptions_and_}{PubMed search field tags}. Note that the article publication type, date type, and date range are modified using the \code{pub_type}, \code{date_type}, \code{min_date} and \code{max_date} arguments below.}
 
-\item{has_abstract}{Logical specifying whether the returned records should be limited those with an abstract. The default value is \emph{TRUE}.}
+\item{has_abstract}{Logical specifying whether the returned records should be limited to those records that have an abstract. The default value is \emph{TRUE}.}
 
 \item{pub_type}{A character string specifying the type of publication the search must return. The default value is \emph{journal article}. For more information: \href{https://www.ncbi.nlm.nih.gov/books/NBK3827/#_pubmedhelp_Search_Field_Descriptions_and_}{PubMed search field tags}.}
+
+\item{api_key}{A character string obtained from your PubMed account. The default value is NULL.}
 
 \item{date_type}{A character string specifying the publication date type that is being specified in the search. Available values are:
 \describe{
@@ -44,11 +47,11 @@ A long-format dataframe with the following columns:
 \item{affiliation}{Character string specifying the affiliation(s) associated with each author for each entry.}}
 }
 \description{
-\code{get_records} fetches \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} records and stores the records in a tidy data format suitable for processing using tools form the \emph{tidyverse}.
+\code{get_records} fetches \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} records and stores the records in a tidy data format suitable for processing using tools from the \emph{tidyverse}.
 }
 \seealso{
 \code{\link[rentrez]{entrez_search}} and \code{\link[rentrez]{entrez_fetch}}
 
-Other related functions: \code{\link{parse_affiliations}},
-  \code{\link{parse_bibliographics}}
+Other related functions: \code{\link{parse_bibliographics}}
 }
+\concept{related functions}
