@@ -113,51 +113,19 @@ get_records <- function(search_terms = '',
                              xpath = './/Id') %>%
         xml2::xml_integer(.)
 
-    #-- Split the PMIDs into manageble chunks ----------------------------#
+    # Collapse into a single string
+    record_pmid <- paste(record_ID,
+                         collapse = ',')
 
-    # Split the 'record_ID' vector into n = 100 sized chunks
-    splitter <- seq(from = 1,
-                    to = record_count,
-                    by = 100)
-
-    # Create an empty list of length 'splitter'
-    splitter_list <- vector(mode = 'list',
-                            length = length(splitter))
-
-    # Split the list of PMIDs, and paste each into a single string
-    for(i in seq_along(splitter)) {
-        splitter_list[[i]] <- record_ID[splitter[[i]]:(splitter[[i]] + 99)]
-        splitter_list[[i]] <- paste(splitter_list[[i]],
-                                    collapse = ',')
-    }
-
-    # Remove NA
-    splitter_list <- purrr::map(.x = splitter_list,
-                    ~stringr::str_replace_all(.x,
-                                              pattern = ',NA',
-                                              replacement = ''))
-
-    #-- Set api pubmed query strings -------------------------------------#
-
-    # Create empty list of length 'record_ID'
-    pubmed_query <- vector(mode = 'list',
-                           length = length(splitter_list))
-
-    # Populate empty list with pubmed query calls
-    for(i in seq_along(splitter_list)) {
-        pubmed_query[[i]] <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=',
-                                    splitter_list[[i]],
-                                    '&api_key=', api_key,
-                                    '&retmode=xml')
-    }
+    # Generate search string
+    retrieve_xml <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=',
+                           record_pmid,
+                           '&api_key=', api_key,
+                           '&retmode=xml')
 
     #-- Download pubmed xml record ---------------------------------------#
 
-    xml_record <- purrr::map(pubmed_query,
-                             xml2::read_xml)
-
-    names(xml_record) <- rep('xml_record',
-                             length(pubmed_query))
+    record <- xml2::read_xml(retrieve_xml)
 
     #-- Close connections ------------------------------------------------#
 
@@ -169,15 +137,522 @@ get_records <- function(search_terms = '',
     #                                                          #
     ############################################################
 
+    ############################################################
+    #                                                          #
+    #                        Set xpaths                        #
+    #                                                          #
+    ###########################################################
 
-    record_out <- purrr::map(xml_record,
-                             pubmedRecords::parse_bibliographics)
+    #-- Surname ----------------------------------------------------------#
 
-    record_out <- bind_rows(record_out)
+    surname_path <- xml2::xml_path(
+        xml2::xml_find_all(record,
+                           './/LastName'))
+
+    #-- Initials ---------------------------------------------------------#
+
+    initials_path <- xml2::xml_path(
+        xml2::xml_find_all(record,
+                           './/Initials'))
+
+    #-- Title ------------------------------------------------------------#
+
+    title_path <- xml2::xml_path(
+        xml2::xml_find_all(record,
+                           './/ArticleTitle'))
+
+    #-- Journal ----------------------------------------------------------#
+
+    journal_path <- xml2::xml_path(
+        xml2::xml_find_all(record,
+                           './/ISOAbbreviation'))
+
+    #-- Publication status -----------------------------------------------#
+
+    status_path <- xml2::xml_path(
+        xml2::xml_find_all(record,
+                           './/PublicationStatus'))
+
+    #-- Volume -----------------------------------------------------------#
+
+    volume_path <- xml2::xml_path(
+        xml2::xml_find_all(record,
+                           './/Volume'))
+
+    #-- Year published ---------------------------------------------------#
+
+    year_published_path <- xml2::xml_path(
+        xml2::xml_find_all(record,
+                           './/PubDate/Year|.//PubDate/MedlineDate'))
+
+    #-- Year online ------------------------------------------------------#
+
+    year_online_path <- xml2::xml_path(
+        xml2::xml_find_all(record,
+                           ".//PubMedPubDate[@PubStatus = 'entrez']/Year"))
+
+    #-- Pages ------------------------------------------------------------#
+
+    pages_path <- xml2::xml_path(
+        xml2::xml_find_all(record,
+                           './/MedlinePgn'))
+
+    #-- DOI --------------------------------------------------------------#
+
+    doi_path <- xml2::xml_path(
+        xml2::xml_find_all(record,
+                           ".//ArticleId[@IdType = 'doi']"))
+
+    #-- Abstract ---------------------------------------------------------#
+
+    abstract_path <- xml2::xml_path(
+        xml2::xml_find_all(record,
+                           './/Abstract'))
+
+    ############################################################
+    #                                                          #
+    #                   Extract information                    #
+    #                                                          #
+    ############################################################
+
+    #-- Surname ----------------------------------------------------------#
+
+    # Define vector for author surnames
+    surname <- vector(mode = 'character',
+                      length = length(surname_path))
+
+    suppressWarnings(
+    for(i in 1:length(surname_path)) {
+        surname[[i]] <- stringr::str_to_lower(
+            xml2::xml_text(
+                xml2::xml_find_first(record,
+                                     surname_path[[i]])))
+    })
+
+    #-- Initials ---------------------------------------------------------#
+
+    # Define vector for author initials
+    initials <- vector(mode = 'character',
+                       length = length(initials_path))
+
+    suppressWarnings(
+    for(i in 1:length(initials_path)) {
+        initials[[i]] <- stringr::str_to_lower(
+            xml2::xml_text(
+                xml2::xml_find_first(record,
+                                     initials_path[[i]])))
+    })
+
+    # For joins with output from parse_affiliation
+    authors <- paste(surname, initials)
+
+    #-- Title ------------------------------------------------------------#
+
+    # Define vector for article title
+    title <- vector(mode = 'character',
+                    length = length(title_path))
+
+    suppressWarnings(
+    for(i in 1:length(title_path)) {
+        title[[i]] <- stringr::str_to_lower(
+            xml2::xml_text(
+                xml2::xml_find_first(record,
+                                     title_path[[i]])))
+    })
+
+    # Make article marker for joins
+    ## Define vector of 'trimmed' title path
+    title_path2 <- vector(mode = 'character',
+                          length = length(title_path))
+
+    for(i in 1:length(title_path)) {
+        title_path2[[i]] <- stringr::str_extract(title_path[[i]],
+                                                 '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
+    }
+
+    # Make dataframe
+    title2 <- data.frame(article_node = title_path2,
+                         title = title) %>%
+        mutate_all(as.character)
+
+    #-- Journal ----------------------------------------------------------#
+
+    # Define vector for journal name
+    journal <- vector(mode = 'character',
+                      length = length(journal_path))
+
+    suppressWarnings(
+    for(i in 1:length(journal_path)) {
+        journal[[i]] <- stringr::str_to_lower(
+            xml2::xml_text(
+                xml2::xml_find_first(record,
+                                     journal_path[[i]])))
+    })
+
+    # Make article marker for joins
+    ## Define vector for 'trimmed' journal path
+    journal_path2 <- vector(mode = 'character',
+                            length = length(journal_path))
+
+    for(i in 1:length(journal_path)) {
+        journal_path2[[i]] <- stringr::str_extract(journal_path[[i]],
+                                                   '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
+    }
+
+    # Make dataframe
+    journal2 <- data.frame(article_node = journal_path2,
+                           journal = journal) %>%
+        dplyr::mutate(journal = stringr::str_replace_all(journal,
+                                                         pattern = '[.]',
+                                                         replacement = '')) %>%
+        mutate_all(as.character)
+
+    #-- Publication status -------------------------------------------#
+
+    # Define vector for publication status
+    status <- vector(mode = 'character',
+                     length = length(status_path))
+
+    suppressWarnings(
+    for(i in 1:length(status_path)) {
+        status[[i]] <- xml2::xml_text(
+            xml2::xml_find_first(record,
+                                 status_path[[i]]))
+    })
+
+    # Make article marker for joins
+    ## Define vector for 'trimmed' year path
+    status_path2 <- vector(mode = 'character',
+                           length = length(status_path))
+
+    for(i in 1:length(status_path)) {
+        status_path2[[i]] <- stringr::str_extract(status_path[[i]],
+                                                  '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
+    }
+
+    # Make dataframe
+    status2 <- data.frame(article_node = status_path2,
+                          publication_status = status) %>%
+        # Edit text
+        dplyr::mutate(publication_status = ifelse(is.na(publication_status),
+                                                  yes = NA,
+                                                  no = ifelse(
+                                                      publication_status
+                                                      == 'ppublish',
+                                                      yes = 'print',
+                                                      no = 'ahead of print'))) %>%
+        mutate_all(as.character)
+
+    #-- Volume ---------------------------------------------------------#
+
+    # Define vector for journal volume
+    volume <- vector(mode = 'numeric',
+                     length = length(volume_path))
+
+    suppressWarnings(
+    for(i in 1:length(volume_path)) {
+        volume[[i]] <- xml2::xml_integer(
+            xml2::xml_find_first(record,
+                                 volume_path[[i]]))
+    })
+
+    # Make article marker for joins
+    ## Define vector for 'trimmed' volume path
+    volume_path2 <- vector(mode = 'character',
+                           length = length(volume_path))
+
+    for(i in 1:length(volume_path)) {
+        volume_path2[[i]] <- stringr::str_extract(volume_path[[i]],
+                                                  '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
+    }
+
+    # Make dataframe
+    volume2 <- data.frame(article_node = volume_path2,
+                          volume = volume) %>%
+        mutate_all(as.character)
+
+    #-- Year published -------------------------------------------------#
+
+    if(length(year_published_path) > 0) {
+        # Define vector for publication year
+        year_published <- vector(mode = 'character',
+                                 length = length(year_published_path))
+
+        suppressWarnings(
+        for(i in 1:length(year_published_path)) {
+            year_published[[i]] <- xml2::xml_text(
+                xml2::xml_find_first(record,
+                                     year_published_path[[i]]))
+        })
+
+        # Make article marker for joins
+        ## Define vector for 'trimmed' year path
+        year_published_path2 <- vector(mode = 'character',
+                                       length = length(year_published_path))
+
+        for(i in 1:length(year_published_path)) {
+            year_published_path2[[i]] <- stringr::str_extract(year_published_path[[i]],
+                                                              '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
+        }
+
+        # Make dataframe
+        year_published2 <- data.frame(article_node = year_published_path2,
+                                      year_published = year_published) %>%
+            # Extract year
+            dplyr::mutate(year_published = stringr::str_extract(year_published,
+                                                                pattern = '[0-9][0-9][0-9][0-9]')) %>%
+            mutate_all(as.character)
+    } else {
+        # Make empty dataframe
+        year_published2 <- data.frame(article_node = as.character(),
+                                      year_published = as.numeric()) %>%
+            mutate_all(as.character)
+    }
+
+    #-- Year online ---------------------------------------------------#
+
+    if(length(year_online_path) > 0) {
+        # Define vector for online publication year
+        year_online <- vector(mode = 'character',
+                              length = length(year_online_path))
+
+        suppressWarnings(
+        for(i in 1:length(year_online_path)) {
+            year_online[[i]] <- xml2::xml_text(
+                xml2::xml_find_first(record,
+                                     year_online_path[[i]]))
+        })
+
+        # Make article marker for joins
+        ## Define vector for 'trimmed' year path
+        year_online_path2 <- vector(mode = 'character',
+                                    length = length(year_online_path))
+
+        for(i in 1:length(year_online_path)) {
+            year_online_path2[[i]] <- stringr::str_extract(year_online_path[[i]],
+                                                           '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
+        }
+
+        # Make dataframe
+        year_online2 <- data.frame(article_node = year_online_path2,
+                                   year_online = year_online) %>%
+            mutate_all(as.character)
+    } else {
+        # Make empty dataframe
+        year_online2 <- data.frame(article_node = as.character(),
+                                   year_online = as.numeric()) %>%
+            mutate_all(as.character)
+    }
+
+    #-- Pages ---------------------------------------------------------#
+
+    if(length(pages_path) > 0) {
+        # Define vector for aricle page numbers
+        pages <- vector(mode = 'character',
+                        length = length(pages_path))
+
+        suppressWarnings(
+        for(i in 1:length(pages_path)) {
+            pages[[i]] <- stringr::str_to_lower(
+                xml2::xml_text(
+                    xml2::xml_find_first(record,
+                                         pages_path[[i]])))
+        })
+
+        # Make article marker for joins
+        ## Define vector for 'trimmed' page-number path
+        pages_path2 <- vector(mode = 'character',
+                              length = length(pages_path))
+
+        for(i in 1:length(pages_path)) {
+            pages_path2[[i]] <- stringr::str_extract(pages_path[[i]],
+                                                     '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
+        }
+
+        # Make dataframe
+        pages2 <- data.frame(article_node = pages_path2,
+                             pages = pages) %>%
+            mutate_all(as.character)
+    } else {
+        # Make empty dataframe
+        pages2 <- data.frame(article_node = as.character(),
+                             pages = as.character()) %>%
+            mutate_all(as.character)
+    }
+
+    #-- PMID --------------------------------------------------------#
+
+    pmid <- data.frame(pmid = record_ID)
+
+    #-- DOI ---------------------------------------------------------#
+
+    if(length(doi_path) > 0) {
+        # Define vector for doi
+        doi <- vector(mode = 'character',
+                      length = length(doi_path))
+
+        suppressWarnings(
+        for(i in 1:length(doi_path)) {
+            doi[[i]] <- xml2::xml_text(
+                xml2::xml_find_first(record,
+                                     doi_path[[i]]))
+        })
+
+        # Make article marker for joins
+        ## Define vector for 'trimmed' doi path
+        doi_path2 <- vector(mode = 'character',
+                            length = length(doi_path))
+
+        for(i in 1:length(doi_path)) {
+            doi_path2[[i]] <- stringr::str_extract(doi_path[[i]],
+                                                   '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
+        }
+
+        # Make dataframe
+        doi2 <- data.frame(article_node = doi_path2,
+                           doi = doi) %>%
+            mutate_all(as.character)
+    } else {
+        # Make empty dataframe
+        doi2 <- data.frame(article_node = as.character(),
+                           doi = as.character()) %>%
+            mutate_all(as.character)
+    }
+
+    #-- Abstract ---------------------------------------------------------#
+
+    # Define vector for abstracts
+    abstract <- vector(mode = 'character',
+                       length = length(abstract_path))
+
+    suppressWarnings(
+    for(i in 1:length(abstract_path)) {
+        abstract[[i]] <- stringr::str_to_lower(
+            xml2::xml_text(
+                xml2::xml_find_first(record,
+                                     abstract_path[[i]])))
+    })
+
+    # Make article marker for joins
+    ## Define vector for 'trimmed' abstract path
+    abstract_path2 <- vector(mode = 'character',
+                             length = length(abstract_path))
+
+    for(i in 1:length(abstract_path)) {
+        abstract_path2[[i]] <- stringr::str_extract(abstract_path[[i]],
+                                                    '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
+    }
+
+    # Make dataframe
+    abstract2 <- data.frame(article_node = abstract_path2,
+                            abstract = abstract) %>%
+        mutate_all(as.character)
+
+    ############################################################
+    #                                                          #
+    #        Construct parse_affiliations joining info         #
+    #                                                          #
+    ############################################################
+
+    #-- Total author count for each record -------------------------------#
+
+    counter <- stringr::str_extract(surname_path,
+                                    '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]') %>%
+        dplyr::tbl_df() %>%
+        tibble::rownames_to_column() %>%
+        dplyr::group_by(value) %>%
+        dplyr::summarise(count = n()) %>%
+        dplyr::mutate(order = as.numeric(
+            stringr::str_extract(value, '[0-9][0-9]?[0-9]?'))) %>%
+        dplyr::arrange(order)
+
+    # Expand article_node to length 'surname'
+    node <- purrr::map2(.x = counter$value,
+                        .y = counter$count,
+                        .f = rep) %>%
+        unlist()
+
+    pmid_expanded <- purrr::map2(.x = pmid$pmid,
+                                 .y = counter$count,
+                                 .f = rep) %>%
+        unlist()
+
+    ############################################################
+    #                                                          #
+    #                    Put it all together                   #
+    #                                                          #
+    ############################################################
+
+    #-- Make into dataframe ----------------------------------------------#
+
+    # Join 'short' dataframes (<=100 entries)
+    biblio_short <- title2 %>%
+        dplyr::left_join(journal2,
+                         by = 'article_node') %>%
+        dplyr::left_join(status2,
+                         by = 'article_node') %>%
+        dplyr::left_join(volume2,
+                         by = 'article_node') %>%
+        dplyr::left_join(pages2,
+                         by = 'article_node') %>%
+        dplyr::left_join(year_published2,
+                         by = 'article_node') %>%
+        dplyr::left_join(year_online2,
+                         by = 'article_node') %>%
+        dplyr::left_join(doi2,
+                         by = 'article_node') %>%
+        dplyr::left_join(abstract2,
+                         by = 'article_node') %>%
+        # If publication status is 'ahead of print' make 'year published' NA
+        dplyr::mutate(year_published = ifelse(publication_status == 'ahead of print',
+                                              yes = NA,
+                                              no = year_published))
+
+    # Join 'long' dataframes
+    biblio_long <- data.frame(article_node = node,
+                              authors = authors,
+                              pmid = pmid_expanded) %>%
+        mutate_all(as.character)
+
+    # Join 'long' and 'short' dataframes
+
+    empty_as_na <- function(x){
+        ifelse(x == '', yes = NA, no = x)
+    }
+
+    biblio_out <- biblio_long %>%
+        dplyr::left_join(biblio_short) %>%
+        dplyr::select(authors,
+                      title,
+                      journal,
+                      publication_status,
+                      volume,
+                      pages,
+                      year_published,
+                      year_online,
+                      pmid,
+                      doi,
+                      abstract) %>%
+        dplyr::mutate(authors = as.character(authors),
+                      title = as.character(title),
+                      journal = as.character(journal),
+                      publication_status = as.character(publication_status),
+                      volume = as.character(volume),
+                      pages = as.character(pages),
+                      year_published = as.character(year_published),
+                      year_online = as.character(year_online),
+                      pmid = as.character(pmid),
+                      doi = as.character(doi),
+                      abstract = as.character(abstract)) %>%
+        dplyr::mutate_all(.funs = trimws) %>%
+        dplyr::mutate_all(.funs = empty_as_na) %>%
+        dplyr::mutate(year_published = as.numeric(year_published),
+                      year_online = as.numeric(year_online))
+
 
     #-- Output ----------------------------------------------------------------#
 
-    return(record_out)
+    return(biblio_out)
 
 }
 
