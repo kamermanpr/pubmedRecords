@@ -94,7 +94,7 @@ df <- get_records(search_terms = "Treede RD[AU] AND Pain[TA]",
 
 Have a quick look at the output.
 
-```{r glimpse, eval=FALSE}
+```{r glimpse}
 # Print first 10 lines
 print(df)
 
@@ -110,7 +110,7 @@ Although not essential for this example, you can added CrossRef citation counts 
 
 **The addition of citations also can take a while if there are a lot of records**.
 
-```{r, citation, eval=FALSE}
+```{r, citation}
 # Add a column called "crossref_citations" to the first 6 observations
 df_citations <- citation_metrics(head(df))
 
