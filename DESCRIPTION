@@ -1,8 +1,8 @@
 Package: pubmedRecords
 Type: Package
 Title: Get and format NCBI PubMed records and their associated bibliometric data as tidy data
-Version: 0.1.0
-Date: 2016-08-07
+Version: 0.1.1
+Date: 2019-08-19
 Author: Peter Kamerman <peter.kamerman@gmail.com>
 Maintainer: Peter Kamerman <peter.kamerman@gmail.com>
 URL: https://github.com/kamermanpr/pubmedRecords
