@@ -44,10 +44,10 @@
 #' @seealso \code{\link[rentrez]{entrez_search}} and \code{\link[rentrez]{entrez_fetch}}
 #'
 #' @export
-get_records <- function(search_terms = '',
+get_records <- function(search_terms,
                         has_abstract = TRUE,
                         pub_type = 'journal article',
-                        api_key = '',
+                        api_key = NULL,
                         date_type = 'PDAT',
                         min_date = '1966/01/01',
                         max_date = format(Sys.Date(), '%Y/%m/%d')) {
@@ -65,14 +65,23 @@ get_records <- function(search_terms = '',
         search_terms <- paste(search_terms, 'hasabstract')
     }
 
+    if(!is.null(api_key)){
     # Search string
-    search_string <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=',
-                            pub_type, '[PT] AND ',
-                            search_terms, '&datetype=',
-                            date_type, '&mindate=',
-                            min_date, '&maxdate=',
-                            max_date, '&api_key=',
-                            api_key, '&retmode=xml&rettype=Count')
+        search_string <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=',
+                                pub_type, '[PT] AND ',
+                                search_terms, '&datetype=',
+                                date_type, '&mindate=',
+                                min_date, '&maxdate=',
+                                max_date, '&api_key=',
+                                api_key, '&retmode=xml&rettype=Count')
+    } else {
+        search_string <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=',
+                                pub_type, '[PT] AND ',
+                                search_terms, '&datetype=',
+                                date_type, '&mindate=',
+                                min_date, '&maxdate=',
+                                max_date, '&retmode=xml&rettype=Count')
+    }
 
     # Remove spaces from search terms
     search_string <- stringr::str_replace_all(search_string,
@@ -94,14 +103,24 @@ get_records <- function(search_terms = '',
     #-- Get PMIDs --------------------------------------------------------#
 
     # Set the fetch string using 'record_count' to set the 'retmax'
-    fetch_string <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=',
-                           pub_type, '[PT] AND ',
-                           search_terms, '&datetype=',
-                           date_type, '&mindate=',
-                           min_date, '&maxdate=',
-                           max_date, '&api_key=',
-                           api_key, '&rettype=xml&retmax=',
-                           record_count)
+    if(!is.null(api_key)){
+        fetch_string <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=',
+                               pub_type, '[PT] AND ',
+                               search_terms, '&datetype=',
+                               date_type, '&mindate=',
+                               min_date, '&maxdate=',
+                               max_date, '&api_key=',
+                               api_key, '&rettype=xml&retmax=',
+                               record_count)
+    } else {
+        fetch_string <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=',
+                               pub_type, '[PT] AND ',
+                               search_terms, '&datetype=',
+                               date_type, '&mindate=',
+                               min_date, '&maxdate=',
+                               max_date, '&rettype=xml&retmax=',
+                               record_count)
+    }
 
     # Remove spaces from fetch terms
     fetch_string <- stringr::str_replace_all(fetch_string,
@@ -118,10 +137,16 @@ get_records <- function(search_terms = '',
                          collapse = ',')
 
     # Generate search string
-    retrieve_xml <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=',
-                           record_pmid,
-                           '&api_key=', api_key,
-                           '&retmode=xml')
+    if(!is.null(api_key)){
+        retrieve_xml <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=',
+                               record_pmid,
+                               '&api_key=', api_key,
+                               '&retmode=xml')
+    } else {
+        retrieve_xml <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=',
+                               record_pmid, '&retmode=xml')
+    }
+
 
     #-- Download pubmed xml record ---------------------------------------#
 
@@ -273,7 +298,7 @@ get_records <- function(search_terms = '',
     # Make dataframe
     title2 <- data.frame(article_node = title_path2,
                          title = title) %>%
-        mutate_all(as.character)
+        dplyr::mutate_all(as.character)
 
     #-- Journal ----------------------------------------------------------#
 
@@ -305,7 +330,7 @@ get_records <- function(search_terms = '',
         dplyr::mutate(journal = stringr::str_replace_all(journal,
                                                          pattern = '[.]',
                                                          replacement = '')) %>%
-        mutate_all(as.character)
+        dplyr::mutate_all(as.character)
 
     #-- Publication status -------------------------------------------#
 
@@ -341,7 +366,7 @@ get_records <- function(search_terms = '',
                                                       == 'ppublish',
                                                       yes = 'print',
                                                       no = 'ahead of print'))) %>%
-        mutate_all(as.character)
+        dplyr::mutate_all(as.character)
 
     #-- Volume ---------------------------------------------------------#
 
@@ -369,7 +394,7 @@ get_records <- function(search_terms = '',
     # Make dataframe
     volume2 <- data.frame(article_node = volume_path2,
                           volume = volume) %>%
-        mutate_all(as.character)
+        dplyr::mutate_all(as.character)
 
     #-- Year published -------------------------------------------------#
 
@@ -401,12 +426,12 @@ get_records <- function(search_terms = '',
             # Extract year
             dplyr::mutate(year_published = stringr::str_extract(year_published,
                                                                 pattern = '[0-9][0-9][0-9][0-9]')) %>%
-            mutate_all(as.character)
+            dplyr::mutate_all(as.character)
     } else {
         # Make empty dataframe
         year_published2 <- data.frame(article_node = as.character(),
                                       year_published = as.numeric()) %>%
-            mutate_all(as.character)
+            dplyr::mutate_all(as.character)
     }
 
     #-- Year online ---------------------------------------------------#
@@ -436,12 +461,12 @@ get_records <- function(search_terms = '',
         # Make dataframe
         year_online2 <- data.frame(article_node = year_online_path2,
                                    year_online = year_online) %>%
-            mutate_all(as.character)
+            dplyr::mutate_all(as.character)
     } else {
         # Make empty dataframe
         year_online2 <- data.frame(article_node = as.character(),
                                    year_online = as.numeric()) %>%
-            mutate_all(as.character)
+            dplyr::mutate_all(as.character)
     }
 
     #-- Pages ---------------------------------------------------------#
@@ -472,12 +497,12 @@ get_records <- function(search_terms = '',
         # Make dataframe
         pages2 <- data.frame(article_node = pages_path2,
                              pages = pages) %>%
-            mutate_all(as.character)
+            dplyr::mutate_all(as.character)
     } else {
         # Make empty dataframe
         pages2 <- data.frame(article_node = as.character(),
                              pages = as.character()) %>%
-            mutate_all(as.character)
+            dplyr::mutate_all(as.character)
     }
 
     #-- PMID --------------------------------------------------------#
@@ -511,12 +536,12 @@ get_records <- function(search_terms = '',
         # Make dataframe
         doi2 <- data.frame(article_node = doi_path2,
                            doi = doi) %>%
-            mutate_all(as.character)
+            dplyr::mutate_all(as.character)
     } else {
         # Make empty dataframe
         doi2 <- data.frame(article_node = as.character(),
                            doi = as.character()) %>%
-            mutate_all(as.character)
+            dplyr::mutate_all(as.character)
     }
 
     #-- Abstract ---------------------------------------------------------#
@@ -546,7 +571,7 @@ get_records <- function(search_terms = '',
     # Make dataframe
     abstract2 <- data.frame(article_node = abstract_path2,
                             abstract = abstract) %>%
-        mutate_all(as.character)
+        dplyr::mutate_all(as.character)
 
     ############################################################
     #                                                          #
@@ -612,7 +637,7 @@ get_records <- function(search_terms = '',
     biblio_long <- data.frame(article_node = node,
                               authors = authors,
                               pmid = pmid_expanded) %>%
-        mutate_all(as.character)
+        dplyr::mutate_all(as.character)
 
     # Join 'long' and 'short' dataframes
 
