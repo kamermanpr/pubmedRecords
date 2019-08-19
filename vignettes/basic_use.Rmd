@@ -72,9 +72,9 @@ The function parameters are:
 **Returning the records can take a while if there are a lot of records**.
 
 ```{r search_1_demo, eval = FALSE}
-# Search for journal articles by RD Treede that contain the word "pain" and 
+# Search for journal articles by RD Treede in the journal "PAIN" and 
 # which were published between 1 January 2000 and 31 December 2018
-df <- get_records(search_terms = "Treede RD[AU] AND pain",
+df <- get_records(search_terms = "Treede RD[AU] AND Pain[TA]",
             min_date = '2000/01/01',
             max_date = '2018/12/31',
             has_abstract = TRUE,
@@ -84,7 +84,7 @@ df <- get_records(search_terms = "Treede RD[AU] AND pain",
 ```
 
 ```{r search_1, echo = FALSE}
-df <- get_records(search_terms = "Treede RD[AU] AND pain",
+df <- get_records(search_terms = "Treede RD[AU] AND Pain[TA]",
             min_date = '2000/01/01',
             max_date = '2018/12/31',
             has_abstract = TRUE,
@@ -154,25 +154,28 @@ tidy_words <- words %>%
     filter(!is.na(word1)) %>%
     filter(!is.na(word2)) %>%
     # Join word columns them back together to form 2-ngrams
-    unite(words, word1, word2, sep = ' ')
+    unite(word, word1, word2, sep = ' ')
 ```
 
 #### Third, count the number of occurances of each 2-ngram
 
 ```{r ngram_count}
 ngram_count <- tidy_words %>%
-    count(words) %>%
+    count(word) %>%
     arrange(desc(n))
 ```
 
-#### Fourth, strip out the top 50 2-ngrams and plot
+#### Fourth, strip out the top 200 2-ngrams and plot
 
-```{r plot}
-word_cloud <- ngram_count[1:200, ] %>% 
+```{r plot, fig.width = 9, fig.height = 7}
+word_cloud <- ngram_count[1:150, ] %>% 
   rename(freq = n)
   
 wordcloud2(data = word_cloud,
            fontFamily = 'arial',
-           size = 1,
+           size = 0.4,
            color = ggthemes::tableau_color_pal(palette = 'Color Blind')(10))
 ```
+
+
+
