@@ -4,8 +4,8 @@
 \alias{get_records}
 \title{Get PubMed records.}
 \usage{
-get_records(search_terms = "", has_abstract = TRUE,
-  pub_type = "journal article", api_key = "", date_type = "PDAT",
+get_records(search_terms, has_abstract = TRUE,
+  pub_type = "journal article", api_key = NULL, date_type = "PDAT",
   min_date = "1966/01/01", max_date = format(Sys.Date(),
   "\%Y/\%m/\%d"))
 }

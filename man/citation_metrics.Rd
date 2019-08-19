@@ -2,34 +2,20 @@
 % Please edit documentation in R/citation_metrics.R
 \name{citation_metrics}
 \alias{citation_metrics}
-\title{Fetch bibliometrics for PubMed records.}
+\title{Fetch CrossRef bibliometrics for PubMed records.}
 \usage{
-citation_metrics(df, crossref = TRUE, altmetric = TRUE)
+citation_metrics(df)
 }
 \arguments{
 \item{df}{The dataframe object returned by \code{\link{get_records}}. Alternatively, any dataframe that includes a column named \emph{pmid}, which contains the PMIDs of each PubMed record bibliometrics are required for.}
-
-\item{crossref}{Logical indicating whether CrossRef citation counts should be fetched. Default value is \emph{TRUE}.}
-
-\item{altmetric}{Logical indicating whether Altmetric data should be fetched. Default value is \emph{TRUE}. Note that if there are no Altmetric data for a record, a warning is printed.}
 }
 \value{
-Returns a dataframe with all the columns of the input dataframe, plus the following columns:
+Returns a dataframe with all the columns of the input dataframe, plus:
 \describe{
-\item{crossref_citations}{CrossRef citation count \emph{(class: integer)}.}
-\item{altmetric_score}{Altmetric summary score \emph{(class: integer)}.}
-\item{altmetric_tweets}{Number of mentions in tweets \emph{(class: integer)}.}
-\item{altmetric_facebook}{Number of Facebook mentions \emph{(class: integer)}.}
-\item{altmetric_posts}{Number of blog post mentions \emph{(class: integer)}.}
-\item{altmetric_mendeley}{Number of times read on Mendeley \emph{(class: integer)}.}}
+\item{crossref_citations}{CrossRef citation count \emph{(class: integer)}.}}
 }
 \description{
-\code{citation_metrics} adds bibliometric data to the records included in the dataframe returned by \code{\link{get_records}}. Metrics include: i) CrossRef article citation count, \href{https://elsevier.altmetric.com}{Altmetric} score, Altmetric Twitter, Facebook, and blog post mentions, and Altmetric Mendeley reader counts. The function provides a wrapper around the \code{\link[rcrossref]{cr_citation_count}} from the package \pkg{rcrossref}, and the \code{\link[rAltmetric]{altmetrics}} and \code{\link[rAltmetric]{altmetric_data}} functions from the package \pkg{rAltmetric}, both of which are from the \href{https://ropensci.org/}{rOpenSci} stable of packages.
-}
-\examples{
-
-\donttest{}
-
+\code{citation_metrics} adds CrossRef citation counts to the records included in the dataframe returned by \code{\link{get_records}}.
 }
 \seealso{
 \code{\link{get_records}} for generating input dataframe.
