@@ -24,9 +24,9 @@ For a full set of search fields tags: \href{https://www.ncbi.nlm.nih.gov/books/N
 
 \item{has_abstract}{Logical specifying whether the returned records should be limited to those records that have an abstract. The default value is \emph{TRUE}.}
 
-\item{pub_type}{A character string specifying the type of publication the search must return. The default value is \emph{journal article}. For more information: \href{https://www.ncbi.nlm.nih.gov/books/NBK3827/#_pubmedhelp_Search_Field_Descriptions_and_}{PubMed search field tags}.}
+\item{pub_type}{A character string specifying the type of publication the search must return. The default value is \emph{journal article}. For more information: \href{https://www.ncbi.nlm.nih.gov/books/NBK3827/table/pubmedhelp.T.publication_types/?report=objectonly}{PubMed article types}.}
 
-\item{api_key}{An API character string obtained from the users PubMed account.}
+\item{api_key}{An API character string obtained from the users NCBI account. The key is not essential, but it specifying a key gives substantially faster record query rates.}
 
 \item{date_type}{A character string specifying the publication date type that is being specified in the search. Available values are:
 \describe{

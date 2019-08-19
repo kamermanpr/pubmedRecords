@@ -16,9 +16,9 @@
 #'
 #' @param has_abstract Logical specifying whether the returned records should be limited to those records that have an abstract. The default value is \emph{TRUE}.
 #'
-#' @param pub_type A character string specifying the type of publication the search must return. The default value is \emph{journal article}. For more information: \href{https://www.ncbi.nlm.nih.gov/books/NBK3827/#_pubmedhelp_Search_Field_Descriptions_and_}{PubMed search field tags}.
+#' @param pub_type A character string specifying the type of publication the search must return. The default value is \emph{journal article}. For more information: \href{https://www.ncbi.nlm.nih.gov/books/NBK3827/table/pubmedhelp.T.publication_types/?report=objectonly}{PubMed article types}.
 #'
-#' @param api_key An API character string obtained from the users PubMed account.
+#' @param api_key An API character string obtained from the users NCBI account. The key is not essential, but it specifying a key gives substantially faster record query rates.
 #'
 #' @param date_type A character string specifying the publication date type that is being specified in the search. Available values are:
 #' \describe{
@@ -150,11 +150,14 @@ get_records <- function(search_terms,
 
     #-- Download pubmed xml record ---------------------------------------#
 
+    suppressWarnings(
     record <- xml2::read_xml(retrieve_xml)
+    )
 
     #-- Close connections ------------------------------------------------#
 
-    closeAllConnections()
+    # Messes up knitting
+    # closeAllConnections()
 
     ############################################################
     #                                                          #
@@ -674,7 +677,7 @@ get_records <- function(search_terms,
         dplyr::mutate(year_published = as.numeric(year_published),
                       year_online = as.numeric(year_online))
 
-
+    biblio_out <- dplyr::as_tibble(biblio_out)
     #-- Output ----------------------------------------------------------------#
 
     return(biblio_out)

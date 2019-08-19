@@ -51,6 +51,8 @@ citation_metrics <- function(df) {
         df <- df %>%
             dplyr::left_join(data_crossref)
 
+        df <- dplyr::as_tibble(df)
+
         #-- output ------------------------------------------------------------#
 
         return(df)

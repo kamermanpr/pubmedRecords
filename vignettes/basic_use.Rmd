@@ -14,6 +14,165 @@ knitr::opts_chunk$set(
 )
 ```
 
+This package provides tools to download records from the NCBI PubMed database based on user-specified search criteria, and to add CrossRef citation data for the returned records. The output is in tidy data format, facilitating downstream analysis using tools from the 'tidyverse'.
+
+This vignette illustrates the use of the package to download data for an author from PubMed and the building a word-cloud from the titles of their publications. 
+
+I will be using Prof Rolf-Detlef Treede, a renowned scientist in the filed of pain research, in this example.
+
+### Step 1
+
+Load the packages
+
 ```{r setup}
+# install.packages("devtools")
+# devtools::install_github("kamermanpr/pubmedRecords")
+
 library(pubmedRecords)
+
+library(dplyr)
+library(stringr)
+library(tidyr)
+library(tidytext)
+library(wordcloud2)
+```
+
+
+### Step 2
+
+Enter search parameters and perform a search using the `get_records` function.
+
+The function parameters are:
+
+- **search_terms:** A character string of terms that define the scope of the PubMed database query. Boolean operators (AND, OR, NOT) and search field tags may be used to create more complex search criteria. Commonly used search fields tags include:  
+  - \[TI]: Word in title  
+  - \[TIAB]: Word in title or abstract  
+  - \[MH]: Medical Subject Heading (MeSH)  
+  - \[AU]: Author name (e.g., Doe J)  
+  - \[AD]: Author institutional affiliation  
+  - \[TA]: Journal title (e.g., J Pain)  
+  For a full set of search fields tags: [PubMed search field tags](https://www.ncbi.nlm.nih.gov/books/NBK3827/#_pubmedhelp_Search_Field_Descriptions_and_).
+  Note that the article publication type, date type, and date range are modified using the _pub\_type_, _date\_type_, _min\_date_ and _max\_date_ arguments below.
+  
+- **pub_type:** A character string specifying the type of publication the search must return. The default value is _'journal article'_. For more information: [PubMed article types](https://www.ncbi.nlm.nih.gov/books/NBK3827/table/pubmedhelp.T.publication_types/?report=objectonly).
+
+- **min_date:** A character string in the format _'YYYY/MM/DD'_, _'YYYY/MM'_ or _'YYYY'_ specifying the starting date of the search. The default value is _1966/01/01'_.
+
+- **max_date:** A character string in the format _'YYYY/MM/DD'_, _'YYYY/MM'_ or _'YYYY'_ specifying the end date of the search. The default value is `Sys.Date()`.
+
+- **date_type:** A character string specifying the publication date type that is being specified in the search. Available values are:  
+  - \[PDAT]: Date the article was published (default)  
+  - \[MDAT]: Date the PubMed entry was modified.
+  - \[EDAT]: Date the entry was added to PubMed.
+
+- **has_abstract:** Logical specifying whether the returned records should be limited to those records that have an abstract. The default value is _TRUE_.
+
+- **api_key:** An API character string obtained from the users NBCI account. The key is not essential, but it specifying a key gives substantially faster record query rates. 
+
+**Returning the records can take a while if there are a lot of records**.
+
+```{r search_1_demo, eval = FALSE}
+# Search for journal articles by RD Treede that contain the word "pain" and 
+# which were published between 1 January 2000 and 31 December 2018
+df <- get_records(search_terms = "Treede RD[AU] AND pain",
+            min_date = '2000/01/01',
+            max_date = '2018/12/31',
+            has_abstract = TRUE,
+            api_key = 'your_api_key_if_you_have_one',
+            pub_type = 'journal article',
+            date_type = 'PDAT')
+```
+
+```{r search_1, echo = FALSE}
+df <- get_records(search_terms = "Treede RD[AU] AND pain",
+            min_date = '2000/01/01',
+            max_date = '2018/12/31',
+            has_abstract = TRUE,
+            pub_type = 'journal article',
+            date_type = 'PDAT')
+```
+
+Have a quick look at the output.
+
+```{r glimpse, eval=FALSE}
+# Print first 10 lines
+print(df)
+
+# View structure
+glimpse(df)
+```
+
+Each author of a paper is found on a separate row, with the rest of the information duplicated down the authors of a given article. Making each row a unique co-author record helps keep the data in a tidy format, and makes filtering records by co-authors easier. The downside is that the returned dataframe can be quite large because of all the duplicated information. 
+
+----
+
+Although not essential for this example, you can added CrossRef citation counts to the records using the `citation_metrics` function. This function requires you to pass to it the output from `get_records`. 
+
+**The addition of citations also can take a while if there are a lot of records**.
+
+```{r, citation, eval=FALSE}
+# Add a column called "crossref_citations" to the first 6 observations
+df_citations <- citation_metrics(head(df))
+
+# View structure
+glimpse(df_citations)
+```
+
+----
+
+### Step 3
+
+Now that we have the data we can generate the wordcloud from article titles.
+
+#### First, select the title column
+
+```{r title}
+words <- df %>% 
+  # Select the title column
+  select(title) %>% 
+  # extract unique entries only
+  unique(.)
+```
+
+#### Second, extract 2-ngrams
+
+```{r extract_ngram}
+tidy_words <- words %>%
+    unnest_tokens(word, title, token = "ngrams", n = 2) %>%
+    # Remove stopwords
+    separate(word, into = c('word1', 'word2'), sep = ' ') %>%
+    filter(!word1 %in% stop_words$word) %>%
+    filter(!word2 %in% stop_words$word) %>%
+    # Convert terms containing numerals to NA
+    mutate(word1 = ifelse(str_detect(word1, '[0-9]'),
+                         yes = NA,
+                         no = paste(word1))) %>%
+    mutate(word2 = ifelse(str_detect(word2, '[0-9]'),
+                          yes = NA,
+                          no = paste(word2))) %>%
+    # Remove NA
+    filter(!is.na(word1)) %>%
+    filter(!is.na(word2)) %>%
+    # Join word columns them back together to form 2-ngrams
+    unite(words, word1, word2, sep = ' ')
+```
+
+#### Third, count the number of occurances of each 2-ngram
+
+```{r ngram_count}
+ngram_count <- tidy_words %>%
+    count(words) %>%
+    arrange(desc(n))
+```
+
+#### Fourth, strip out the top 50 2-ngrams and plot
+
+```{r plot}
+word_cloud <- ngram_count[1:200, ] %>% 
+  rename(freq = n)
+  
+wordcloud2(data = word_cloud,
+           fontFamily = 'arial',
+           size = 1,
+           color = ggthemes::tableau_color_pal(palette = 'Color Blind')(10))
 ```

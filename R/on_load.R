@@ -11,7 +11,8 @@
             c('.', 'article_node', 'author_node', 'authors',
               'count', 'country_iso3', 'country_name', 'initials', 'n',
               'order2', 'state_name', 'surname', 'value', 'pmid', 'doi',
-              'score', 'crossref_citations', 'publication_status'))
+              'score', 'crossref_citations', 'publication_status', 
+              'tableau_color_pal'))
 
     invisible()
 }

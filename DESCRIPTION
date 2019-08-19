@@ -16,12 +16,15 @@ Depends:
 	R (>= 3.3.3),
 Imports:
         dplyr,
+	ggthemes,
 	magrittr,
 	purrr,
 	rcrossref,
 	stringr,
 	tibble,
+	tidytext,
 	tidyr,
+	wordcloud2,
 	xml2
 Suggests: 
     knitr,
