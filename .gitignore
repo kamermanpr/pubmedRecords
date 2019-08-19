@@ -1,5 +1,4 @@
 .Rproj.user
 pubmedRecords.Rproj
-*.html
 .tests/
 inst/doc
