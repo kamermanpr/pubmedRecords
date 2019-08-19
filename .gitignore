@@ -2,3 +2,4 @@
 pubmedRecords.Rproj
 *.html
 .tests/
+inst/doc
