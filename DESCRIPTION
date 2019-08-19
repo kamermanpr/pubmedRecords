@@ -14,8 +14,7 @@ LazyData: true
 RoxygenNote: 6.1.1
 Depends: 
 	R (>= 3.3.3),
-Imports: 
-    	countrycode,
+Imports:
         dplyr,
 	magrittr,
 	purrr,
