@@ -8,3 +8,12 @@
 ## About
 
 This package provides tools to download records from the NCBI [PubMed](https://www.ncbi.nlm.nih.gov/pubmed/) database based on user-specified search criteria, and to add CrossRef citation data for the returned records. The output is in tidy data format, facilitating downstream analysis using tools from the 'tidyverse'.
+
+## Installation
+
+You can install _pubmedRecords_ from github with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("kamermanpr/pubmedRecords")
+```
