@@ -7,7 +7,7 @@ Author: Peter Kamerman <peter.kamerman@gmail.com>
 Maintainer: Peter Kamerman <peter.kamerman@gmail.com>
 URL: https://github.com/kamermanpr/pubmedRecords
 BugReports: https://github.com/kamermanpr/pubmedRecords/issues
-Description: This package provides tools to download records from the NCBI PubMed database based on user-specified search criteria, and to add commonly used bibliometric data (e.g., citations, altmetrics) for the returned records. The output is in tidy data format, facilitating downstream analysis using tools from the 'tidyverse'. 
+Description: This package provides tools to download records from the NCBI PubMed database based on user-specified search criteria, and to add CrossRef citation data for the returned records. The output is in tidy data format, facilitating downstream analysis using tools from the 'tidyverse'. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -18,7 +18,6 @@ Imports:
         dplyr,
 	magrittr,
 	purrr,
-	rAltmetric,
 	rcrossref,
 	stringr,
 	tibble,
