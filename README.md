@@ -2,7 +2,7 @@
 
 #### By: Peter Kamerman
 
-[![Build Status](https://travis-ci.org/search/search.svg?branch=master)](https://travis-ci.org/search/search) [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip) [![Licence](https://img.shields.io/badge/licence-MIT+-lightgrey.svg)](http://choosealicense.com/)
+[![Build Status](https://travis-ci.com/search/search.svg?branch=master)](https://travis-ci.org/search/search) [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip) [![Licence](https://img.shields.io/badge/licence-MIT+-lightgrey.svg)](http://choosealicense.com/)
 [![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-green.svg?style=flat-square)](commits/master) ![GitHub All Releases](https://img.shields.io/github/downloads/kamermanpr/pubmedRecords/total)
 
 ## About
