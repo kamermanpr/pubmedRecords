@@ -2,5 +2,4 @@
 
 export(citation_metrics)
 export(get_records)
-export(parse_bibliographics)
 importFrom(magrittr,"%>%")
