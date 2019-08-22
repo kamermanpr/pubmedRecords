@@ -1,6 +1,6 @@
 #' @title Fetch CrossRef bibliometrics for PubMed records.
 #
-#' @description \code{citation_metrics} adds CrossRef citation counts to the records included in the dataframe returned by \code{\link{get_records}}.
+#' @description \code{get_citations} adds CrossRef citation counts to the records included in the dataframe returned by \code{\link{get_records}}.
 #' @param df The dataframe object returned by \code{\link{get_records}}. Alternatively, any dataframe that includes a column named \emph{pmid}, which contains the PMIDs of each PubMed record bibliometrics are required for.
 #'
 #' @return Returns a dataframe with all the columns of the input dataframe, plus:
@@ -10,7 +10,7 @@
 #' @seealso \code{\link{get_records}} for generating input dataframe.
 #'
 #' @export
-citation_metrics <- function(df) {
+get_citations <- function(df) {
 
     ############################################################
     #                                                          #
@@ -39,12 +39,12 @@ citation_metrics <- function(df) {
 
         #-- Pass to CrossRef --------------------------------------------------#
 
-            data_crossref <- df2$doi %>%
+           suppressMessages(data_crossref <- df2$doi %>%
                 purrr::map(rcrossref::cr_citation_count) %>%
                 dplyr::bind_rows() %>%
                 dplyr::left_join(df2) %>%
                 dplyr::rename(crossref_citations = count) %>%
-                dplyr::select(pmid, crossref_citations)
+                dplyr::select(pmid, crossref_citations))
 
         #-- Join data_crossref with input dataframe -------#
 

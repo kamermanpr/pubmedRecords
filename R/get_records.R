@@ -14,8 +14,6 @@
 #'
 #' For a full set of search fields tags: \href{https://www.ncbi.nlm.nih.gov/books/NBK3827/#_pubmedhelp_Search_Field_Descriptions_and_}{PubMed search field tags}. Note that the article publication type, date type, and date range are modified using the \code{pub_type}, \code{date_type}, \code{min_date} and \code{max_date} arguments below.
 #'
-#' @param has_abstract Logical specifying whether the returned records should be limited to those records that have an abstract. The default value is \emph{TRUE}.
-#'
 #' @param pub_type A character string specifying the type of publication the search must return. The default value is \emph{journal article}. For more information: \href{https://www.ncbi.nlm.nih.gov/books/NBK3827/table/pubmedhelp.T.publication_types/?report=objectonly}{PubMed article types}.
 #'
 #' @param api_key An API character string obtained from the users NCBI account. The key is not essential, but it specifying a key gives substantially faster record query rates.
@@ -45,7 +43,6 @@
 #'
 #' @export
 get_records <- function(search_terms,
-                        has_abstract = TRUE,
                         pub_type = 'journal article',
                         api_key = NULL,
                         date_type = 'PDAT',
@@ -57,16 +54,17 @@ get_records <- function(search_terms,
     #                       Query PubMed                       #
     #                                                          #
     ############################################################
-
+    
+    ############################################################
+    #                                                          #
+    #                       Query PubMed                       #
+    #                                                          #
+    ############################################################
+    
     #-- Determine how many articles are returned by the search terms -----#
-
-    # Add has_abstract logical
-    if(has_abstract == TRUE) {
-        search_terms <- paste(search_terms, 'hasabstract')
-    }
-
+    
     if(!is.null(api_key)){
-    # Search string
+        # Search string
         search_string <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=',
                                 pub_type, '[PT] AND ',
                                 search_terms, '&datetype=',
@@ -82,24 +80,19 @@ get_records <- function(search_terms,
                                 min_date, '&maxdate=',
                                 max_date, '&retmode=xml&rettype=Count')
     }
-
+    
     # Remove spaces from search terms
     search_string <- stringr::str_replace_all(search_string,
-                                             pattern = ' ',
-                                             replacement = '+')
-
+                                              pattern = ' ',
+                                              replacement = '+')
+    
     # Get record count
     record_count <- xml2::read_xml(search_string) %>%
         xml2::xml_find_all(.,
                            xpath = './/Count') %>%
         xml2::xml_text(.) %>%
         as.numeric()
-
-    # Throw a warning if number of records is > 200
-    if(record_count > 200) {
-        print(paste(record_count, 'records will be retrieved. Downloading so many full records will take a long time, so go play some foosball.'))
-    }
-
+    
     #-- Get PMIDs --------------------------------------------------------#
 
     # Set the fetch string using 'record_count' to set the 'retmax'
@@ -121,7 +114,7 @@ get_records <- function(search_terms,
                                max_date, '&rettype=xml&retmax=',
                                record_count)
     }
-
+    
     # Remove spaces from fetch terms
     fetch_string <- stringr::str_replace_all(fetch_string,
                                               pattern = ' ',
@@ -131,33 +124,26 @@ get_records <- function(search_terms,
         xml2::xml_find_all(.,
                              xpath = './/Id') %>%
         xml2::xml_integer(.)
-
+    
+    # Split record_ID into a series of lists of about 100 items long each
+    splits <- ceiling(record_count/100)
+    
+    record_split <- split(record_ID, 
+                          rep_len(1:splits, length(record_ID)))
+    
     # Collapse into a single string
-    record_pmid <- paste(record_ID,
-                         collapse = ',')
-
-    # Generate search string
-    if(!is.null(api_key)){
-        retrieve_xml <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=',
-                               record_pmid,
-                               '&api_key=', api_key,
-                               '&retmode=xml')
-    } else {
-        retrieve_xml <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=',
-                               record_pmid, '&retmode=xml')
-    }
-
-
+    record_pmid <- purrr::map(record_split,
+                              ~ paste(.x, collapse = ','))
+    
     #-- Download pubmed xml record ---------------------------------------#
-
-    suppressWarnings(
-    record <- xml2::read_xml(retrieve_xml)
-    )
-
-    #-- Close connections ------------------------------------------------#
-
-    # Messes up knitting
-    # closeAllConnections()
+    record <- purrr::map(record_pmid, 
+                         ~ rentrez::entrez_fetch(db = 'pubmed', 
+                                                 id = .x, 
+                                                 rettype = 'xml', 
+                                                 retmode = 'xml'))
+    
+    record <- purrr::map(record, 
+                        ~ xml2::read_xml(.x))
 
     ############################################################
     #                                                          #
@@ -173,69 +159,63 @@ get_records <- function(search_terms,
 
     #-- Surname ----------------------------------------------------------#
 
-    surname_path <- xml2::xml_path(
-        xml2::xml_find_all(record,
-                           './/LastName'))
+    surname_path <- purrr::map(record, 
+                               ~ xml2::xml_path(xml2::xml_find_all(.x, './/LastName')))
 
     #-- Initials ---------------------------------------------------------#
 
-    initials_path <- xml2::xml_path(
-        xml2::xml_find_all(record,
-                           './/Initials'))
+    initials_path <- purrr::map(record,
+                                ~ xml2::xml_path(xml2::xml_find_all(.x, './/Initials')))
 
     #-- Title ------------------------------------------------------------#
 
-    title_path <- xml2::xml_path(
-        xml2::xml_find_all(record,
-                           './/ArticleTitle'))
+    title_path <- purrr::map(record,
+                             ~ xml2::xml_path(xml2::xml_find_all(.x, './/ArticleTitle')))
 
     #-- Journal ----------------------------------------------------------#
 
-    journal_path <- xml2::xml_path(
-        xml2::xml_find_all(record,
-                           './/ISOAbbreviation'))
+    journal_path <- purrr::map(record,
+                               ~ xml2::xml_path( xml2::xml_find_all(.x, './/ISOAbbreviation')))
 
     #-- Publication status -----------------------------------------------#
 
-    status_path <- xml2::xml_path(
-        xml2::xml_find_all(record,
-                           './/PublicationStatus'))
+    status_path <- purrr::map(record, 
+                              ~ xml2::xml_path(xml2::xml_find_all(.x, './/PublicationStatus')))
 
     #-- Volume -----------------------------------------------------------#
 
-    volume_path <- xml2::xml_path(
-        xml2::xml_find_all(record,
-                           './/Volume'))
+    volume_path <- purrr::map(record, 
+                              ~ xml2::xml_path(xml2::xml_find_all(.x, './/Volume')))
 
     #-- Year published ---------------------------------------------------#
 
-    year_published_path <- xml2::xml_path(
-        xml2::xml_find_all(record,
-                           './/PubDate/Year|.//PubDate/MedlineDate'))
+    year_published_path <- purrr::map(record,
+                                      ~ xml2::xml_path(xml2::xml_find_all(.x, './/PubDate/Year|.//PubDate/MedlineDate')))
 
     #-- Year online ------------------------------------------------------#
 
-    year_online_path <- xml2::xml_path(
-        xml2::xml_find_all(record,
-                           ".//PubMedPubDate[@PubStatus = 'entrez']/Year"))
+    year_online_path <- purrr::map(record, 
+                                   ~ xml2::xml_path(xml2::xml_find_all(.x, ".//PubMedPubDate[@PubStatus = 'entrez']/Year")))
 
     #-- Pages ------------------------------------------------------------#
 
-    pages_path <- xml2::xml_path(
-        xml2::xml_find_all(record,
-                           './/MedlinePgn'))
-
+    pages_path <- purrr::map(record, 
+                             ~ xml2::xml_path(xml2::xml_find_all(.x,'.//MedlinePgn')))
+    
+    #-- PMID --------------------------------------------------------------#
+    
+    pmid_path <- purrr::map(record,
+                           ~ xml2::xml_path(xml2::xml_find_all(.x, ".//ArticleId[@IdType = 'pubmed']")))
+    
     #-- DOI --------------------------------------------------------------#
 
-    doi_path <- xml2::xml_path(
-        xml2::xml_find_all(record,
-                           ".//ArticleId[@IdType = 'doi']"))
+    doi_path <- purrr::map(record,
+                           ~ xml2::xml_path(xml2::xml_find_all(.x, ".//ArticleId[@IdType = 'doi']")))
 
     #-- Abstract ---------------------------------------------------------#
 
-    abstract_path <- xml2::xml_path(
-        xml2::xml_find_all(record,
-                           './/Abstract'))
+    abstract_path <- purrr::map(record,
+                                ~ xml2::xml_path(xml2::xml_find_all(.x, './/Abstract')))
 
     ############################################################
     #                                                          #
@@ -246,365 +226,309 @@ get_records <- function(search_terms,
     #-- Surname ----------------------------------------------------------#
 
     # Define vector for author surnames
-    surname <- vector(mode = 'character',
-                      length = length(surname_path))
+    surname <- purrr::map(surname_path,
+                          ~ vector(mode = 'character'))
 
     suppressWarnings(
-    for(i in 1:length(surname_path)) {
-        surname[[i]] <- stringr::str_to_lower(
-            xml2::xml_text(
-                xml2::xml_find_first(record,
-                                     surname_path[[i]])))
-    })
+        for(j in 1:length(surname)) {
+            for(i in 1:length(surname_path[[j]])) {
+                surname[[j]][[i]] <- stringr::str_to_lower(
+                    xml2::xml_text(
+                        xml2::xml_find_first(record[[j]],
+                                             surname_path[[j]][[i]])))
+                }})
+    
+    surname <- purrr::map2(.x = surname, 
+                           .y = surname_path,
+                           ~ data.frame(surname = .x,
+                                        article_node = stringr::str_extract(.y,
+                                                                            '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')) %>% 
+                               dplyr::mutate(article_node = as.character(article_node),
+                                             surname = as.character(surname)) %>% 
+                               dplyr::mutate(counter = dplyr::row_number()))
 
     #-- Initials ---------------------------------------------------------#
 
     # Define vector for author initials
-    initials <- vector(mode = 'character',
-                       length = length(initials_path))
+    initials <- purrr::map(initials_path,
+                           ~ vector(mode = 'character'))
 
     suppressWarnings(
-    for(i in 1:length(initials_path)) {
-        initials[[i]] <- stringr::str_to_lower(
-            xml2::xml_text(
-                xml2::xml_find_first(record,
-                                     initials_path[[i]])))
-    })
-
-    # For joins with output from parse_affiliation
-    authors <- paste(surname, initials)
+        for(j in 1:length(initials)){
+            for(i in 1:length(initials_path[[j]])) {
+                initials[[j]][[i]] <- stringr::str_to_lower(
+                    xml2::xml_text(
+                        xml2::xml_find_first(record[[j]],
+                                             initials_path[[j]][[i]])))
+                }})
+    
+    initials <- purrr::map2(.x = initials, 
+                            .y = initials_path, 
+                            ~ data.frame(initials = .x, 
+                                         article_node = stringr::str_extract(.y,
+                                                                             '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')) %>% 
+                                dplyr::mutate(article_node = as.character(article_node),
+                                              initials = as.character(initials)) %>% 
+                                dplyr::mutate(counter = dplyr::row_number()))
 
     #-- Title ------------------------------------------------------------#
 
     # Define vector for article title
-    title <- vector(mode = 'character',
-                    length = length(title_path))
+    title <- purrr::map(title_path,
+                        ~ vector(mode = 'character'))
 
     suppressWarnings(
-    for(i in 1:length(title_path)) {
-        title[[i]] <- stringr::str_to_lower(
-            xml2::xml_text(
-                xml2::xml_find_first(record,
-                                     title_path[[i]])))
-    })
-
-    # Make article marker for joins
-    ## Define vector of 'trimmed' title path
-    title_path2 <- vector(mode = 'character',
-                          length = length(title_path))
-
-    for(i in 1:length(title_path)) {
-        title_path2[[i]] <- stringr::str_extract(title_path[[i]],
-                                                 '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
-    }
-
-    # Make dataframe
-    title2 <- data.frame(article_node = title_path2,
-                         title = title) %>%
-        dplyr::mutate_all(as.character)
+        for(j in 1:length(title_path)) {
+            for(i in 1:length(title_path[[j]])) {
+                title[[j]][[i]] <- stringr::str_to_lower(
+                    xml2::xml_text(
+                        xml2::xml_find_first(record[[j]],
+                                             title_path[[j]][[i]])))
+    }})
+    
+    title <- purrr::map2(.x = title, 
+                         .y = title_path, 
+                         ~ data.frame(title = .x,
+                                      article_node = stringr::str_extract(.y,
+                                                                          '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')) %>% 
+                             dplyr::mutate(article_node = as.character(article_node),
+                                           title = as.character(title)))
 
     #-- Journal ----------------------------------------------------------#
 
     # Define vector for journal name
-    journal <- vector(mode = 'character',
-                      length = length(journal_path))
-
+    journal <- purrr::map(journal_path,
+                          ~ vector(mode = 'character'))
+    
     suppressWarnings(
-    for(i in 1:length(journal_path)) {
-        journal[[i]] <- stringr::str_to_lower(
-            xml2::xml_text(
-                xml2::xml_find_first(record,
-                                     journal_path[[i]])))
-    })
-
-    # Make article marker for joins
-    ## Define vector for 'trimmed' journal path
-    journal_path2 <- vector(mode = 'character',
-                            length = length(journal_path))
-
-    for(i in 1:length(journal_path)) {
-        journal_path2[[i]] <- stringr::str_extract(journal_path[[i]],
-                                                   '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
-    }
-
-    # Make dataframe
-    journal2 <- data.frame(article_node = journal_path2,
-                           journal = journal) %>%
-        dplyr::mutate(journal = stringr::str_replace_all(journal,
-                                                         pattern = '[.]',
-                                                         replacement = '')) %>%
-        dplyr::mutate_all(as.character)
+        for(j in 1:length(journal_path)) {
+            for(i in 1:length(journal_path[[j]])) {
+                journal[[j]][[i]] <- stringr::str_to_lower(
+                    xml2::xml_text(
+                        xml2::xml_find_first(record[[j]],
+                                             journal_path[[j]][[i]])))
+            }})
+    
+    journal <- purrr::map2(.x = journal, 
+                           .y = journal_path, 
+                           ~ data.frame(journal = .x,
+                                        article_node = stringr::str_extract(.y,
+                                                                            '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')) %>% 
+                               dplyr::mutate(article_node = as.character(article_node),
+                                             journal = as.character(journal)))
 
     #-- Publication status -------------------------------------------#
 
     # Define vector for publication status
-    status <- vector(mode = 'character',
-                     length = length(status_path))
-
+    status <- purrr::map(status_path, 
+                         vector(mode = 'character'))
+    
     suppressWarnings(
-    for(i in 1:length(status_path)) {
-        status[[i]] <- xml2::xml_text(
-            xml2::xml_find_first(record,
-                                 status_path[[i]]))
-    })
-
-    # Make article marker for joins
-    ## Define vector for 'trimmed' year path
-    status_path2 <- vector(mode = 'character',
-                           length = length(status_path))
-
-    for(i in 1:length(status_path)) {
-        status_path2[[i]] <- stringr::str_extract(status_path[[i]],
-                                                  '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
-    }
-
-    # Make dataframe
-    status2 <- data.frame(article_node = status_path2,
-                          publication_status = status) %>%
-        # Edit text
-        dplyr::mutate(publication_status = ifelse(is.na(publication_status),
-                                                  yes = NA,
-                                                  no = ifelse(
-                                                      publication_status
-                                                      == 'ppublish',
-                                                      yes = 'print',
-                                                      no = 'ahead of print'))) %>%
-        dplyr::mutate_all(as.character)
+        for(j in 1:length(status_path)) {
+            for(i in 1:length(status_path[[j]])) {
+                status[[j]][[i]] <- stringr::str_to_lower(
+                    xml2::xml_text(
+                        xml2::xml_find_first(record[[j]],
+                                             status_path[[j]][[i]])))
+            }})
+    
+    status <- purrr::map2(.x = status, 
+                          .y = status_path, 
+                          ~ data.frame(status = .x,
+                                       article_node = stringr::str_extract(.y,
+                                                                           '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')) %>% 
+                              dplyr::mutate(article_node = as.character(article_node),
+                                            status = as.character(status)))
 
     #-- Volume ---------------------------------------------------------#
 
     # Define vector for journal volume
-    volume <- vector(mode = 'numeric',
-                     length = length(volume_path))
+    volume <- purrr::map(volume_path,
+                        vector(mode = 'character'))
 
     suppressWarnings(
-    for(i in 1:length(volume_path)) {
-        volume[[i]] <- xml2::xml_integer(
-            xml2::xml_find_first(record,
-                                 volume_path[[i]]))
-    })
-
-    # Make article marker for joins
-    ## Define vector for 'trimmed' volume path
-    volume_path2 <- vector(mode = 'character',
-                           length = length(volume_path))
-
-    for(i in 1:length(volume_path)) {
-        volume_path2[[i]] <- stringr::str_extract(volume_path[[i]],
-                                                  '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
-    }
-
-    # Make dataframe
-    volume2 <- data.frame(article_node = volume_path2,
-                          volume = volume) %>%
-        dplyr::mutate_all(as.character)
+        for(j in 1:length(volume_path)) {
+            for(i in 1:length(volume_path[[j]])) {
+                volume[[j]][[i]] <- stringr::str_to_lower(
+                    xml2::xml_text(
+                        xml2::xml_find_first(record[[j]],
+                                             volume_path[[j]][[i]])))
+            }})
+    
+    volume <- purrr::map2(.x = volume, 
+                          .y = volume_path, 
+                          ~ data.frame(volume = .x,
+                                       article_node = stringr::str_extract(.y,
+                                                                           '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')) %>% 
+                              dplyr::mutate(article_node = as.character(article_node),
+                                            volume = as.character(volume)))
 
     #-- Year published -------------------------------------------------#
 
     if(length(year_published_path) > 0) {
         # Define vector for publication year
-        year_published <- vector(mode = 'character',
-                                 length = length(year_published_path))
-
+        year_published <- purrr::map(year_published_path,
+                                     vector(mode = 'character'))
+        
         suppressWarnings(
-        for(i in 1:length(year_published_path)) {
-            year_published[[i]] <- xml2::xml_text(
-                xml2::xml_find_first(record,
-                                     year_published_path[[i]]))
-        })
-
-        # Make article marker for joins
-        ## Define vector for 'trimmed' year path
-        year_published_path2 <- vector(mode = 'character',
-                                       length = length(year_published_path))
-
-        for(i in 1:length(year_published_path)) {
-            year_published_path2[[i]] <- stringr::str_extract(year_published_path[[i]],
-                                                              '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
-        }
-
-        # Make dataframe
-        year_published2 <- data.frame(article_node = year_published_path2,
-                                      year_published = year_published) %>%
-            # Extract year
-            dplyr::mutate(year_published = stringr::str_extract(year_published,
-                                                                pattern = '[0-9][0-9][0-9][0-9]')) %>%
-            dplyr::mutate_all(as.character)
+            for(j in 1:length(year_published_path)) {
+                for(i in 1:length(year_published_path[[j]])) {
+                    year_published[[j]][[i]] <- stringr::str_to_lower(
+                        xml2::xml_text(
+                            xml2::xml_find_first(record[[j]],
+                                                 year_published_path[[j]][[i]])))
+                }})
+        
+        year_published <- purrr::map2(.x = year_published, 
+                                      .y = year_published_path, 
+                                      ~ data.frame(year_published = .x,
+                                                   article_node = stringr::str_extract(.y,
+                                                                                       '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')) %>% 
+                                          dplyr::mutate(article_node = as.character(article_node),
+                                                        year_published = as.character(year_published)))
     } else {
         # Make empty dataframe
-        year_published2 <- data.frame(article_node = as.character(),
-                                      year_published = as.numeric()) %>%
-            dplyr::mutate_all(as.character)
+        year_published <- purrr::map(1:length(title), 
+                                    ~ data.frame(article_node = as.character(),
+                                                 year_published = as.character()))
     }
 
     #-- Year online ---------------------------------------------------#
 
     if(length(year_online_path) > 0) {
-        # Define vector for online publication year
-        year_online <- vector(mode = 'character',
-                              length = length(year_online_path))
-
+        # Define vector for year online
+        year_online <- purrr::map(year_online_path,
+                                  vector(mode = 'character'))
+        
         suppressWarnings(
-        for(i in 1:length(year_online_path)) {
-            year_online[[i]] <- xml2::xml_text(
-                xml2::xml_find_first(record,
-                                     year_online_path[[i]]))
-        })
-
-        # Make article marker for joins
-        ## Define vector for 'trimmed' year path
-        year_online_path2 <- vector(mode = 'character',
-                                    length = length(year_online_path))
-
-        for(i in 1:length(year_online_path)) {
-            year_online_path2[[i]] <- stringr::str_extract(year_online_path[[i]],
-                                                           '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
-        }
-
-        # Make dataframe
-        year_online2 <- data.frame(article_node = year_online_path2,
-                                   year_online = year_online) %>%
-            dplyr::mutate_all(as.character)
+            for(j in 1:length(year_online_path)) {
+                for(i in 1:length(year_online_path[[j]])) {
+                    year_online[[j]][[i]] <- stringr::str_to_lower(
+                        xml2::xml_text(
+                            xml2::xml_find_first(record[[j]],
+                                                 year_online_path[[j]][[i]])))
+                }})
+        
+        year_online <- purrr::map2(.x = year_online, 
+                                   .y = year_online_path,
+                                   ~ data.frame(year_online = .x,
+                                                article_node = stringr::str_extract(.y,
+                                                                                    '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')) %>% 
+                                       dplyr::mutate(article_node = as.character(article_node),
+                                                     year_online = as.character(year_online)))
     } else {
         # Make empty dataframe
-        year_online2 <- data.frame(article_node = as.character(),
-                                   year_online = as.numeric()) %>%
-            dplyr::mutate_all(as.character)
+        year_online <- purrr::map(1:length(title), 
+                                  ~ data.frame(article_node = as.character(),
+                                               year_online = as.character()))
     }
-
     #-- Pages ---------------------------------------------------------#
 
     if(length(pages_path) > 0) {
-        # Define vector for aricle page numbers
-        pages <- vector(mode = 'character',
-                        length = length(pages_path))
-
+        # Define vector for publication year
+        pages <- purrr::map(pages_path,
+                            vector(mode = 'character'))
+        
         suppressWarnings(
-        for(i in 1:length(pages_path)) {
-            pages[[i]] <- stringr::str_to_lower(
-                xml2::xml_text(
-                    xml2::xml_find_first(record,
-                                         pages_path[[i]])))
-        })
-
-        # Make article marker for joins
-        ## Define vector for 'trimmed' page-number path
-        pages_path2 <- vector(mode = 'character',
-                              length = length(pages_path))
-
-        for(i in 1:length(pages_path)) {
-            pages_path2[[i]] <- stringr::str_extract(pages_path[[i]],
-                                                     '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
-        }
-
-        # Make dataframe
-        pages2 <- data.frame(article_node = pages_path2,
-                             pages = pages) %>%
-            dplyr::mutate_all(as.character)
+            for(j in 1:length(pages_path)) {
+                for(i in 1:length(pages_path[[j]])) {
+                    pages[[j]][[i]] <- stringr::str_to_lower(
+                        xml2::xml_text(
+                            xml2::xml_find_first(record[[j]],
+                                                 pages_path[[j]][[i]])))
+                }})
+        
+        pages <- purrr::map2(.x = pages, 
+                             .y = pages_path, 
+                             ~ data.frame(pages = .x,
+                                          article_node = stringr::str_extract(.y,
+                                                                              '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')) %>% 
+                                 dplyr::mutate(article_node = as.character(article_node),
+                                               pages = as.character(pages)))
     } else {
         # Make empty dataframe
-        pages2 <- data.frame(article_node = as.character(),
-                             pages = as.character()) %>%
-            dplyr::mutate_all(as.character)
+        pages <- purrr::map(1:length(title), 
+                            ~ data.frame(article_node = as.character(),
+                                         pages = as.character()))
     }
+    
 
     #-- PMID --------------------------------------------------------#
 
-    pmid <- data.frame(pmid = record_ID)
+    # Define vector for journal volume
+    pmid <- purrr::map(pmid_path,
+                       vector(mode = 'character'))
+    
+    suppressWarnings(
+        for(j in 1:length(pmid_path)) {
+            for(i in 1:length(pmid_path[[j]])) {
+                pmid[[j]][[i]] <- stringr::str_to_lower(
+                    xml2::xml_text(
+                        xml2::xml_find_first(record[[j]],
+                                             pmid_path[[j]][[i]])))
+            }})
+    
+    pmid <- purrr::map2(.x = pmid, 
+                        .y = pmid_path, 
+                        ~ data.frame(pmid = .x,
+                                     article_node = stringr::str_extract(.y,
+                                                                         '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')) %>% 
+                            dplyr::mutate(article_node = as.character(article_node),
+                                          pmid = as.character(pmid)))
 
     #-- DOI ---------------------------------------------------------#
 
     if(length(doi_path) > 0) {
-        # Define vector for doi
-        doi <- vector(mode = 'character',
-                      length = length(doi_path))
-
+        # Define vector for publication year
+        doi <- purrr::map(doi_path,
+                          vector(mode = 'character'))
+        
         suppressWarnings(
-        for(i in 1:length(doi_path)) {
-            doi[[i]] <- xml2::xml_text(
-                xml2::xml_find_first(record,
-                                     doi_path[[i]]))
-        })
-
-        # Make article marker for joins
-        ## Define vector for 'trimmed' doi path
-        doi_path2 <- vector(mode = 'character',
-                            length = length(doi_path))
-
-        for(i in 1:length(doi_path)) {
-            doi_path2[[i]] <- stringr::str_extract(doi_path[[i]],
-                                                   '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
-        }
-
-        # Make dataframe
-        doi2 <- data.frame(article_node = doi_path2,
-                           doi = doi) %>%
-            dplyr::mutate_all(as.character)
+            for(j in 1:length(doi_path)) {
+                for(i in 1:length(doi_path[[j]])) {
+                    doi[[j]][[i]] <- stringr::str_to_lower(
+                        xml2::xml_text(
+                            xml2::xml_find_first(record[[j]],
+                                                 doi_path[[j]][[i]])))
+                }})
+        
+        doi <- purrr::map2(.x = doi, 
+                           .y = doi_path,
+                           ~ data.frame(doi = .x,
+                                        article_node = stringr::str_extract(.y,
+                                                                            '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')) %>% 
+                               dplyr::mutate(article_node = as.character(article_node),
+                                             doi = as.character(doi)))
     } else {
         # Make empty dataframe
-        doi2 <- data.frame(article_node = as.character(),
-                           doi = as.character()) %>%
-            dplyr::mutate_all(as.character)
+        doi <- purrr::map(1:length(title),
+                          ~ data.frame(article_node = as.character(),
+                                       doi = as.character()))
     }
-
+    
     #-- Abstract ---------------------------------------------------------#
 
-    # Define vector for abstracts
-    abstract <- vector(mode = 'character',
-                       length = length(abstract_path))
-
+    # Define vector for journal volume
+    abstract <- purrr::map(abstract_path,
+                         vector(mode = 'character'))
+    
     suppressWarnings(
-    for(i in 1:length(abstract_path)) {
-        abstract[[i]] <- stringr::str_to_lower(
-            xml2::xml_text(
-                xml2::xml_find_first(record,
-                                     abstract_path[[i]])))
-    })
-
-    # Make article marker for joins
-    ## Define vector for 'trimmed' abstract path
-    abstract_path2 <- vector(mode = 'character',
-                             length = length(abstract_path))
-
-    for(i in 1:length(abstract_path)) {
-        abstract_path2[[i]] <- stringr::str_extract(abstract_path[[i]],
-                                                    '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')
-    }
-
-    # Make dataframe
-    abstract2 <- data.frame(article_node = abstract_path2,
-                            abstract = abstract) %>%
-        dplyr::mutate_all(as.character)
-
-    ############################################################
-    #                                                          #
-    #        Construct parse_affiliations joining info         #
-    #                                                          #
-    ############################################################
-
-    #-- Total author count for each record -------------------------------#
-
-    counter <- stringr::str_extract(surname_path,
-                                    '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]') %>%
-        dplyr::tbl_df() %>%
-        tibble::rownames_to_column() %>%
-        dplyr::group_by(value) %>%
-        dplyr::summarise(count = n()) %>%
-        dplyr::mutate(order = as.numeric(
-            stringr::str_extract(value, '[0-9][0-9]?[0-9]?'))) %>%
-        dplyr::arrange(order)
-
-    # Expand article_node to length 'surname'
-    node <- purrr::map2(.x = counter$value,
-                        .y = counter$count,
-                        .f = rep) %>%
-        unlist()
-
-    pmid_expanded <- purrr::map2(.x = pmid$pmid,
-                                 .y = counter$count,
-                                 .f = rep) %>%
-        unlist()
-
+        for(j in 1:length(abstract_path)) {
+            for(i in 1:length(abstract_path[[j]])) {
+                abstract[[j]][[i]] <- stringr::str_to_lower(
+                    xml2::xml_text(
+                        xml2::xml_find_first(record[[j]],
+                                             abstract_path[[j]][[i]])))
+            }})
+    
+    abstract <- purrr::map2(.x = abstract, 
+                            .y = abstract_path, 
+                            ~ data.frame(abstract = .x,
+                                         article_node = stringr::str_extract(.y,
+                                                                             '/PubmedArticleSet/PubmedArticle\\[[0-9][0-9]?[0-9]?\\]')) %>% 
+                                dplyr::mutate(article_node = as.character(article_node),
+                                              abstract = as.character(abstract)))
+    
     ############################################################
     #                                                          #
     #                    Put it all together                   #
@@ -612,59 +536,54 @@ get_records <- function(search_terms,
     ############################################################
 
     #-- Make into dataframe ----------------------------------------------#
-
-    # Join 'short' dataframes (<=100 entries)
-    biblio_short <- title2 %>%
-        dplyr::left_join(journal2,
-                         by = 'article_node') %>%
-        dplyr::left_join(status2,
-                         by = 'article_node') %>%
-        dplyr::left_join(volume2,
-                         by = 'article_node') %>%
-        dplyr::left_join(pages2,
-                         by = 'article_node') %>%
-        dplyr::left_join(year_published2,
-                         by = 'article_node') %>%
-        dplyr::left_join(year_online2,
-                         by = 'article_node') %>%
-        dplyr::left_join(doi2,
-                         by = 'article_node') %>%
-        dplyr::left_join(abstract2,
-                         by = 'article_node') %>%
-        # If publication status is 'ahead of print' make 'year published' NA
-        dplyr::mutate(year_published = ifelse(publication_status == 'ahead of print',
-                                              yes = NA,
-                                              no = year_published))
-
-    # Join 'long' dataframes
-    biblio_long <- data.frame(article_node = node,
-                              authors = authors,
-                              pmid = pmid_expanded) %>%
-        dplyr::mutate_all(as.character)
-
-    # Join 'long' and 'short' dataframes
-
+    
+    suppressMessages(joined <- purrr::map2(.x = surname,
+                          .y = initials,
+                          ~ left_join(.x, .y)) %>% 
+        purrr::map2(.x = .,
+                    .y = title,
+                    ~ left_join(.x, .y)) %>% 
+        purrr::map2(.x = .,
+                    .y = journal,
+                    ~ left_join(.x, .y)) %>%
+        purrr::map2(.x = .,
+                    .y = status,
+                    ~ left_join(.x, .y)) %>%
+        purrr::map2(.x = .,
+                    .y = volume,
+                    ~ left_join(.x, .y)) %>%
+        purrr::map2(.x = .,
+                    .y = pages,
+                    ~ left_join(.x, .y)) %>%
+        purrr::map2(.x = .,
+                    .y = year_published,
+                    ~ left_join(.x, .y)) %>%
+        purrr::map2(.x = .,
+                    .y = year_online,
+                    ~ left_join(.x, .y)) %>%
+        purrr::map2(.x = .,
+                    .y = pmid,
+                    ~ left_join(.x, .y)) %>%
+        purrr::map2(.x = .,
+                    .y = doi,
+                    ~ left_join(.x, .y)) %>% 
+        purrr::map2(.x = .,
+                    .y = abstract,
+                    ~ left_join(.x, .y)))
+    
+    joined <- dplyr::bind_rows(joined) %>% 
+        dplyr::select(-counter, -article_node)
+        
     empty_as_na <- function(x){
         ifelse(x == '', yes = NA, no = x)
     }
 
-    biblio_out <- biblio_long %>%
-        dplyr::left_join(biblio_short) %>%
-        dplyr::select(authors,
-                      title,
-                      journal,
-                      publication_status,
-                      volume,
-                      pages,
-                      year_published,
-                      year_online,
-                      pmid,
-                      doi,
-                      abstract) %>%
-        dplyr::mutate(authors = as.character(authors),
+    joined <- joined %>%
+        dplyr::mutate(surname = as.character(surname),
+                      initials = as.character(initials),
                       title = as.character(title),
                       journal = as.character(journal),
-                      publication_status = as.character(publication_status),
+                      status = as.character(status),
                       volume = as.character(volume),
                       pages = as.character(pages),
                       year_published = as.character(year_published),
@@ -675,12 +594,11 @@ get_records <- function(search_terms,
         dplyr::mutate_all(.funs = trimws) %>%
         dplyr::mutate_all(.funs = empty_as_na) %>%
         dplyr::mutate(year_published = as.numeric(year_published),
-                      year_online = as.numeric(year_online))
-
-    biblio_out <- dplyr::as_tibble(biblio_out)
+                      year_online = as.numeric(year_online)) %>% 
+        dplyr::as_tibble()
+    
     #-- Output ----------------------------------------------------------------#
 
-    return(biblio_out)
-
+    return(joined)
 }
 
