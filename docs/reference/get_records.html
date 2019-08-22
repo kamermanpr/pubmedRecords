@@ -169,11 +169,19 @@
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A long-format dataframe with the following columns:</p><dl class='dl-horizontal'>
-<dt>author_node</dt><dd><p>Character string specifying the XPath for each entry.</p></dd>
-<dt>pmid</dt><dd><p>PubMed unique identification code for each entry <em>(class: integer)</em>.</p></dd>
-<dt>authors</dt><dd><p>Character string specifying author name <em>format: surname initials</em>.</p></dd>
-<dt>affiliation</dt><dd><p>Character string specifying the affiliation(s) associated with each author for each entry.</p></dd></dl>
+    <p>A long-format dataframe (each author of an article on a new row) with the following columns:</p><dl class='dl-horizontal'>
+<dt>surname</dt><dd><p>Character string specifying author surname.</p></dd>
+<dt>initials</dt><dd><p>Character string specifying author initials.</p></dd>
+<dt>title</dt><dd><p>Character string specifying title of an article.</p></dd>
+<dt>journal</dt><dd><p>Character string specifying the journal title (abbreviated title name).</p></dd>
+<dt>status</dt><dd><p>Character string specifying publication status of an article (e.g., ahead of print.</p></dd>
+<dt>volume</dt><dd><p>Character string specifying the journal volume.</p></dd>
+<dt>pages</dt><dd><p>Character string specifying the page numbers of in print articles.</p></dd>
+<dt>year_published</dt><dd><p>Numeric specifying the year an article came out in print.</p></dd>
+<dt>year_online</dt><dd><p>Numeric specifying the year an article was added to the PubMed database.</p></dd>
+<dt>pmid</dt><dd><p>Character string specifying the PubMed ID of an article.</p></dd>
+<dt>doi</dt><dd><p>Character string specifying the DOI of an article.</p></dd>
+<dt>abstract</dt><dd><p>Character string containing the full abstract of an article</p></dd></dl>
 
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
