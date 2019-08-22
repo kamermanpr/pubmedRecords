@@ -4,10 +4,9 @@
 \alias{get_records}
 \title{Get PubMed records.}
 \usage{
-get_records(search_terms, has_abstract = TRUE,
-  pub_type = "journal article", api_key = NULL, date_type = "PDAT",
-  min_date = "1966/01/01", max_date = format(Sys.Date(),
-  "\%Y/\%m/\%d"))
+get_records(search_terms, pub_type = "journal article", api_key = NULL,
+  date_type = "PDAT", min_date = "1966/01/01",
+  max_date = format(Sys.Date(), "\%Y/\%m/\%d"))
 }
 \arguments{
 \item{search_terms}{A character string of terms that define the scope of the PubMed database query. Boolean operators \emph{(AND, OR, NOT)} and search field tags may be used to create more complex search criteria. Commonly used search fields tags include:
@@ -21,8 +20,6 @@ get_records(search_terms, has_abstract = TRUE,
 }
 
 For a full set of search fields tags: \href{https://www.ncbi.nlm.nih.gov/books/NBK3827/#_pubmedhelp_Search_Field_Descriptions_and_}{PubMed search field tags}. Note that the article publication type, date type, and date range are modified using the \code{pub_type}, \code{date_type}, \code{min_date} and \code{max_date} arguments below.}
-
-\item{has_abstract}{Logical specifying whether the returned records should be limited to those records that have an abstract. The default value is \emph{TRUE}.}
 
 \item{pub_type}{A character string specifying the type of publication the search must return. The default value is \emph{journal article}. For more information: \href{https://www.ncbi.nlm.nih.gov/books/NBK3827/table/pubmedhelp.T.publication_types/?report=objectonly}{PubMed article types}.}
 
@@ -51,5 +48,7 @@ A long-format dataframe with the following columns:
 }
 \seealso{
 \code{\link[rentrez]{entrez_search}} and \code{\link[rentrez]{entrez_fetch}}
+
+Other related functions: \code{\link{count_records}}
 }
 \concept{related functions}
