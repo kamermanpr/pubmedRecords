@@ -3,7 +3,7 @@
 #### By: Peter Kamerman
 
 ![Travis (.org)](https://img.shields.io/travis/kamermanpr/pubmedRecords?logo=travis) ![AppVeyor](https://img.shields.io/appveyor/ci/kamermanpr/pubmedRecords?logo=appveyor) [![Licence](https://img.shields.io/badge/licence-MIT+-lightgrey.svg)](http://choosealicense.com/)
-[![packageversion](https://img.shields.io/badge/Package%20version-0.1.2-green.svg?style=flat-square)](commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.1.3-green.svg?style=flat-square)](commits/master)
 
 ## About
 
