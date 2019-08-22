@@ -69,7 +69,7 @@ The function parameters are:
 
 - **api_key:** An API character string obtained from the users NBCI account. The key is not essential, but it specifying a key gives substantially faster record query rates. 
 
-**Returning the records can take a while if there are a lot of records**.
+**Returning the records can take a while if there are a lot of records, so I suggest that you use `count_records` before `get_records` (they use the same parameters) to check how many record queries will be made before executing a request**.
 
 ```{r search_1_demo, eval = FALSE}
 # Search for journal articles by RD Treede in the journal "PAIN" and 
@@ -77,7 +77,6 @@ The function parameters are:
 df <- get_records(search_terms = "Treede RD[AU] AND Pain[TA]",
             min_date = '2000/01/01',
             max_date = '2018/12/31',
-            has_abstract = TRUE,
             api_key = 'your_api_key_if_you_have_one',
             pub_type = 'journal article',
             date_type = 'PDAT')
@@ -87,7 +86,6 @@ df <- get_records(search_terms = "Treede RD[AU] AND Pain[TA]",
 df <- get_records(search_terms = "Treede RD[AU] AND Pain[TA]",
             min_date = '2000/01/01',
             max_date = '2018/12/31',
-            has_abstract = TRUE,
             pub_type = 'journal article',
             date_type = 'PDAT')
 ```
@@ -112,7 +110,7 @@ Although not essential for this example, you can added CrossRef citation counts 
 
 ```{r, citation}
 # Add a column called "crossref_citations" to the first 6 observations
-df_citations <- citation_metrics(head(df))
+df_citations <- get_citations(head(df))
 
 # View structure
 glimpse(df_citations)
