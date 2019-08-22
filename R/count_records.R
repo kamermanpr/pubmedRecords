@@ -30,13 +30,6 @@
 #'
 #' @importFrom magrittr %>%
 #'
-#' @return A long-format dataframe with the following columns:
-#' \describe{
-#' \item{author_node}{Character string specifying the XPath for each entry.}
-#' \item{pmid}{PubMed unique identification code for each entry \emph{(class: integer)}.}
-#' \item{authors}{Character string specifying author name \emph{format: surname initials}.}
-#' \item{affiliation}{Character string specifying the affiliation(s) associated with each author for each entry.}}
-#'
 #' @family related functions
 #'
 #' @seealso \code{\link[rentrez]{entrez_search}}

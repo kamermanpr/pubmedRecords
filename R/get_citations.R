@@ -1,11 +1,11 @@
 #' @title Fetch CrossRef bibliometrics for PubMed records.
 #
 #' @description \code{get_citations} adds CrossRef citation counts to the records included in the dataframe returned by \code{\link{get_records}}.
-#' @param df The dataframe object returned by \code{\link{get_records}}. Alternatively, any dataframe that includes a column named \emph{pmid}, which contains the PMIDs of each PubMed record bibliometrics are required for.
+#' @param df The dataframe object returned by \code{\link{get_records}}.
 #'
 #' @return Returns a dataframe with all the columns of the input dataframe, plus:
 #' \describe{
-#' \item{crossref_citations}{CrossRef citation count \emph{(class: integer)}.}}
+#' \item{crossref_citations}{Numeric value specifying the CrossRef citation count for an article.}}
 #'
 #' @seealso \code{\link{get_records}} for generating input dataframe.
 #'
@@ -59,7 +59,7 @@ get_citations <- function(df) {
 
     } else {
 
-        return(stop("The function requires a dataframe with a column labelled 'pmid', and which contains PubMed IDs"))
+        return(stop("The function requires a dataframe returned by the 'pubmedRecords::get_records' function."))
 
     }
 }

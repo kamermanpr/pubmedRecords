@@ -35,14 +35,6 @@ For a full set of search fields tags: \href{https://www.ncbi.nlm.nih.gov/books/N
 
 \item{max_date}{A character string in the format \emph{'YYYY/MM/DD', 'YYYY/MM' or 'YYYY'} specifying the end date of the search. The default value is \code{Sys.Date()}.}
 }
-\value{
-A long-format dataframe with the following columns:
-\describe{
-\item{author_node}{Character string specifying the XPath for each entry.}
-\item{pmid}{PubMed unique identification code for each entry \emph{(class: integer)}.}
-\item{authors}{Character string specifying author name \emph{format: surname initials}.}
-\item{affiliation}{Character string specifying the affiliation(s) associated with each author for each entry.}}
-}
 \description{
 \code{count_records} returns a count of \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} records returned by a search.
 }

@@ -30,13 +30,21 @@
 #'
 #' @importFrom magrittr %>%
 #'
-#' @return A long-format dataframe with the following columns:
+#' @return A long-format dataframe (each author of an article on a new row) with the following columns:
 #' \describe{
-#' \item{author_node}{Character string specifying the XPath for each entry.}
-#' \item{pmid}{PubMed unique identification code for each entry \emph{(class: integer)}.}
-#' \item{authors}{Character string specifying author name \emph{format: surname initials}.}
-#' \item{affiliation}{Character string specifying the affiliation(s) associated with each author for each entry.}}
-#'
+#' \item{surname}{Character string specifying author surname.}
+#' \item{initials}{Character string specifying author initials.}
+#' \item{title}{Character string specifying title of an article.}
+#' \item{journal}{Character string specifying the journal title (abbreviated title name).}
+#' \item{status}{Character string specifying publication status of an article (e.g., ahead of print.}
+#' \item{volume}{Character string specifying the journal volume.}
+#' \item{pages}{Character string specifying the page numbers of in print articles.}
+#' \item{year_published}{Numeric specifying the year an article came out in print.}
+#' \item{year_online}{Numeric specifying the year an article was added to the PubMed database.}
+#' \item{pmid}{Character string specifying the PubMed ID of an article.}
+#' \item{doi}{Character string specifying the DOI of an article.}
+#' \item{abstract}{Character string containing the full abstract of an article}}
+#' 
 #' @family related functions
 #'
 #' @seealso \code{\link[rentrez]{entrez_search}} and \code{\link[rentrez]{entrez_fetch}}
