@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • pubmedRecords</title>
+<title>Fetch CrossRef bibliometrics for PubMed records. — get_citations • pubmedRecords</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,10 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Fetch CrossRef bibliometrics for PubMed records. — get_citations" />
+
+<meta property="og:description" content="get_citations adds CrossRef citation counts to the records included in the dataframe returned by get_records." />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -47,7 +50,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -106,54 +109,52 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Fetch CrossRef bibliometrics for PubMed records.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/kamermanpr/pubmedRecords/blob/master/R/get_citations.R'><code>R/get_citations.R</code></a></small>
+    <div class="hidden name"><code>get_citations.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    
+    <p><code>get_citations</code> adds CrossRef citation counts to the records included in the dataframe returned by <code><a href='get_records.html'>get_records</a></code>.</p>
+    
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
-
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="count_records.html">count_records()</a></code> </p>
-        </td>
-        <td><p>Retrieve the number of records returned by a query.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_citations.html">get_citations()</a></code> </p>
-        </td>
-        <td><p>Fetch CrossRef bibliometrics for PubMed records.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_records.html">get_records()</a></code> </p>
-        </td>
-        <td><p>Get PubMed records.</p></td>
-      </tr>
-    </tbody>
+    <pre class="usage"><span class='fu'>get_citations</span>(<span class='no'>df</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>df</th>
+      <td><p>The dataframe object returned by <code><a href='get_records.html'>get_records</a></code>. Alternatively, any dataframe that includes a column named <em>pmid</em>, which contains the PMIDs of each PubMed record bibliometrics are required for.</p></td>
+    </tr>
     </table>
-  </div>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>Returns a dataframe with all the columns of the input dataframe, plus:</p><dl class='dl-horizontal'>
+<dt>crossref_citations</dt><dd><p>CrossRef citation count <em>(class: integer)</em>.</p></dd></dl>
+
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='get_records.html'>get_records</a></code> for generating input dataframe.</p></div>
+    
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
-    </ul>
+      <li><a href="#arguments">Arguments</a></li>
+      
+      <li><a href="#value">Value</a></li>
+
+      <li><a href="#see-also">See also</a></li>
+          </ul>
+
   </div>
 </div>
 

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get PubMed records. — get_records • pubmedRecords</title>
+<title>Retrieve the number of records returned by a query. — count_records • pubmedRecords</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Get PubMed records. — get_records" />
+<meta property="og:title" content="Retrieve the number of records returned by a query. — count_records" />
 
-<meta property="og:description" content="get_records fetches PubMed records and stores the records in a tidy data format suitable for processing using tools from the tidyverse." />
+<meta property="og:description" content="count_records returns a count of PubMed records returned by a search." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -111,19 +111,19 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get PubMed records.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/kamermanpr/pubmedRecords/blob/master/R/get_records.R'><code>R/get_records.R</code></a></small>
-    <div class="hidden name"><code>get_records.Rd</code></div>
+    <h1>Retrieve the number of records returned by a query.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/kamermanpr/pubmedRecords/blob/master/R/count_records.R'><code>R/count_records.R</code></a></small>
+    <div class="hidden name"><code>count_records.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p><code>get_records</code> fetches <a href='http://www.ncbi.nlm.nih.gov/pubmed'>PubMed</a> records and stores the records in a tidy data format suitable for processing using tools from the <em>tidyverse</em>.</p>
+    <p><code>count_records</code> returns a count of <a href='http://www.ncbi.nlm.nih.gov/pubmed'>PubMed</a> records returned by a search.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>get_records</span>(<span class='no'>search_terms</span>, <span class='kw'>pub_type</span> <span class='kw'>=</span> <span class='st'>"journal article"</span>, <span class='kw'>api_key</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>date_type</span> <span class='kw'>=</span> <span class='st'>"PDAT"</span>, <span class='kw'>min_date</span> <span class='kw'>=</span> <span class='st'>"1966/01/01"</span>,
+    <pre class="usage"><span class='fu'>count_records</span>(<span class='no'>search_terms</span>, <span class='kw'>pub_type</span> <span class='kw'>=</span> <span class='st'>"journal article"</span>,
+  <span class='kw'>api_key</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>date_type</span> <span class='kw'>=</span> <span class='st'>"PDAT"</span>, <span class='kw'>min_date</span> <span class='kw'>=</span> <span class='st'>"1966/01/01"</span>,
   <span class='kw'>max_date</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/format'>format</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Sys.time'>Sys.Date</a></span>(), <span class='st'>"%Y/%m/%d"</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -178,8 +178,8 @@
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://www.rdocumentation.org/packages/rentrez/topics/entrez_search'>entrez_search</a></code> and <code><a href='https://www.rdocumentation.org/packages/rentrez/topics/entrez_fetch'>entrez_fetch</a></code></p>
-<p>Other related functions: <code><a href='count_records.html'>count_records</a></code></p></div>
+    <div class='dont-index'><p><code><a href='https://www.rdocumentation.org/packages/rentrez/topics/entrez_search'>entrez_search</a></code></p>
+<p>Other related functions: <code><a href='get_records.html'>get_records</a></code></p></div>
     
 
   </div>
