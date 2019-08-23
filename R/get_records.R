@@ -144,6 +144,10 @@ get_records <- function(search_terms,
                               ~ paste(.x, collapse = ','))
     
     #-- Download pubmed xml record ---------------------------------------#
+    if(!is.null(api_key)) {
+        rentrez::set_entrez_key(api_key)
+    }
+    
     record <- purrr::map(record_pmid, 
                          ~ rentrez::entrez_fetch(db = 'pubmed', 
                                                  id = .x, 
