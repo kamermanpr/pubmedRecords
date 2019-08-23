@@ -52,7 +52,7 @@ A long-format dataframe (each author of an article on a new row) with the follow
 \item{abstract}{Character string containing the full abstract of an article}}
 }
 \description{
-\code{get_records} fetches \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} records and stores the records in a tidy data format suitable for processing using tools from the \emph{tidyverse}.
+A wrapper around \code{\link[rentrez]{entrez_fetch}}, \code{get_records} fetches \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} records and stores the records in a tidy dataframe suitable for processing using tools from the \emph{tidyverse}.
 }
 \seealso{
 \code{\link[rentrez]{entrez_search}} and \code{\link[rentrez]{entrez_fetch}}

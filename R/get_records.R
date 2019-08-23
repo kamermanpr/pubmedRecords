@@ -1,6 +1,6 @@
 #' @title Get PubMed records.
 #
-#' @description \code{get_records} fetches \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} records and stores the records in a tidy data format suitable for processing using tools from the \emph{tidyverse}.
+#' @description A wrapper around \code{\link[rentrez]{entrez_fetch}}, \code{get_records} fetches \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} records and stores the records in a tidy dataframe suitable for processing using tools from the \emph{tidyverse}.
 #'
 #' @param search_terms A character string of terms that define the scope of the PubMed database query. Boolean operators \emph{(AND, OR, NOT)} and search field tags may be used to create more complex search criteria. Commonly used search fields tags include:
 #' \describe{
