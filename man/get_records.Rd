@@ -45,14 +45,14 @@ A long-format dataframe (each author of an article on a new row) with the follow
 \item{status}{Character string specifying publication status of an article (e.g., ahead of print.}
 \item{volume}{Character string specifying the journal volume.}
 \item{pages}{Character string specifying the page numbers of in print articles.}
-\item{year_published}{Numeric specifying the year an article came out in print.}
-\item{year_online}{Numeric specifying the year an article was added to the PubMed database.}
+\item{year_published}{Character string specifying the year an article came out in print.}
+\item{year_online}{Character string specifying the year an article was added to the PubMed database.}
 \item{pmid}{Character string specifying the PubMed ID of an article.}
 \item{doi}{Character string specifying the DOI of an article.}
 \item{abstract}{Character string containing the full abstract of an article}}
 }
 \description{
-A wrapper around \code{\link[rentrez]{entrez_fetch}}, \code{get_records} fetches \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} records and stores the records in a tidy dataframe suitable for processing using tools from the \emph{tidyverse}.
+A wrapper around \code{\link[rentrez]{entrez_fetch}}, \code{get_records} fetches \emph{PubmedArticle} records and stores the records in a tidy dataframe suitable for processing using tools from the \emph{tidyverse}.
 }
 \seealso{
 \code{\link[rentrez]{entrez_search}} and \code{\link[rentrez]{entrez_fetch}}

@@ -32,7 +32,7 @@
 
 <meta property="og:title" content="Get PubMed records. — get_records" />
 
-<meta property="og:description" content="A wrapper around entrez_fetch, get_records fetches PubMed records and stores the records in a tidy dataframe suitable for processing using tools from the tidyverse." />
+<meta property="og:description" content="A wrapper around entrez_fetch, get_records fetches PubmedArticle records and stores the records in a tidy dataframe suitable for processing using tools from the tidyverse." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pubmedRecords</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -118,7 +118,7 @@
 
     <div class="ref-description">
     
-    <p>A wrapper around <code><a href='https://www.rdocumentation.org/packages/rentrez/topics/entrez_fetch'>entrez_fetch</a></code>, <code>get_records</code> fetches <a href='http://www.ncbi.nlm.nih.gov/pubmed'>PubMed</a> records and stores the records in a tidy dataframe suitable for processing using tools from the <em>tidyverse</em>.</p>
+    <p>A wrapper around <code><a href='https://www.rdocumentation.org/packages/rentrez/topics/entrez_fetch'>entrez_fetch</a></code>, <code>get_records</code> fetches <em>PubmedArticle</em> records and stores the records in a tidy dataframe suitable for processing using tools from the <em>tidyverse</em>.</p>
     
     </div>
 
@@ -177,8 +177,8 @@
 <dt>status</dt><dd><p>Character string specifying publication status of an article (e.g., ahead of print.</p></dd>
 <dt>volume</dt><dd><p>Character string specifying the journal volume.</p></dd>
 <dt>pages</dt><dd><p>Character string specifying the page numbers of in print articles.</p></dd>
-<dt>year_published</dt><dd><p>Numeric specifying the year an article came out in print.</p></dd>
-<dt>year_online</dt><dd><p>Numeric specifying the year an article was added to the PubMed database.</p></dd>
+<dt>year_published</dt><dd><p>Character string specifying the year an article came out in print.</p></dd>
+<dt>year_online</dt><dd><p>Character string specifying the year an article was added to the PubMed database.</p></dd>
 <dt>pmid</dt><dd><p>Character string specifying the PubMed ID of an article.</p></dd>
 <dt>doi</dt><dd><p>Character string specifying the DOI of an article.</p></dd>
 <dt>abstract</dt><dd><p>Character string containing the full abstract of an article</p></dd></dl>
