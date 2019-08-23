@@ -18,7 +18,7 @@ This package provides tools to download records from the NCBI PubMed database ba
 
 This vignette illustrates the use of the package to download data for an author from PubMed and the building a word-cloud from the titles of their publications. 
 
-I will be using Prof Rolf-Detlef Treede, a renowned scientist in the filed of pain research, in this example.
+I will be using Prof Rolf-Detlef Treede, a renowned scientist in the field of pain research, in this example.
 
 ### Step 1
 
