@@ -1,6 +1,6 @@
 #' @title Get PubMed records.
 #
-#' @description A wrapper around \code{\link[rentrez]{entrez_fetch}}, \code{get_records} fetches \href{http://www.ncbi.nlm.nih.gov/pubmed}{PubMed} records and stores the records in a tidy dataframe suitable for processing using tools from the \emph{tidyverse}.
+#' @description A wrapper around \code{\link[rentrez]{entrez_fetch}}, \code{get_records} fetches \emph{PubmedArticle} records and stores the records in a tidy dataframe suitable for processing using tools from the \emph{tidyverse}.
 #'
 #' @param search_terms A character string of terms that define the scope of the PubMed database query. Boolean operators \emph{(AND, OR, NOT)} and search field tags may be used to create more complex search criteria. Commonly used search fields tags include:
 #' \describe{
@@ -39,8 +39,8 @@
 #' \item{status}{Character string specifying publication status of an article (e.g., ahead of print.}
 #' \item{volume}{Character string specifying the journal volume.}
 #' \item{pages}{Character string specifying the page numbers of in print articles.}
-#' \item{year_published}{Numeric specifying the year an article came out in print.}
-#' \item{year_online}{Numeric specifying the year an article was added to the PubMed database.}
+#' \item{year_published}{Character string specifying the year an article came out in print.}
+#' \item{year_online}{Character string specifying the year an article was added to the PubMed database.}
 #' \item{pmid}{Character string specifying the PubMed ID of an article.}
 #' \item{doi}{Character string specifying the DOI of an article.}
 #' \item{abstract}{Character string containing the full abstract of an article}}
@@ -74,7 +74,7 @@ get_records <- function(search_terms,
     if(!is.null(api_key)){
         # Search string
         search_string <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=',
-                                pub_type, '[PT] AND ',
+                                pub_type, '[PTYP] AND ',
                                 search_terms, '&datetype=',
                                 date_type, '&mindate=',
                                 min_date, '&maxdate=',
@@ -82,7 +82,7 @@ get_records <- function(search_terms,
                                 api_key, '&retmode=xml&rettype=Count')
     } else {
         search_string <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=',
-                                pub_type, '[PT] AND ',
+                                pub_type, '[PTYP] AND ',
                                 search_terms, '&datetype=',
                                 date_type, '&mindate=',
                                 min_date, '&maxdate=',
@@ -106,7 +106,7 @@ get_records <- function(search_terms,
     # Set the fetch string using 'record_count' to set the 'retmax'
     if(!is.null(api_key)){
         fetch_string <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=',
-                               pub_type, '[PT] AND ',
+                               pub_type, '[PTYP] AND ',
                                search_terms, '&datetype=',
                                date_type, '&mindate=',
                                min_date, '&maxdate=',
@@ -115,7 +115,7 @@ get_records <- function(search_terms,
                                record_count)
     } else {
         fetch_string <- paste0('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=',
-                               pub_type, '[PT] AND ',
+                               pub_type, '[PTYP] AND ',
                                search_terms, '&datetype=',
                                date_type, '&mindate=',
                                min_date, '&maxdate=',
@@ -140,16 +140,16 @@ get_records <- function(search_terms,
                           rep_len(1:splits, length(record_ID)))
     
     # Collapse into a single string
-    record_pmid <- purrr::map(record_split,
-                              ~ paste(.x, collapse = ','))
-    
+    # record_pmid <- purrr::map(record_split,
+    #                           ~ paste(.x, collapse = ','))
+
     #-- Download pubmed xml record ---------------------------------------#
     
     if(!is.null(api_key)) {
         rentrez::set_entrez_key(api_key)
     }
     
-    record <- purrr::map(record_pmid, 
+    record <- purrr::map(record_split, 
                          ~ rentrez::entrez_fetch(db = 'pubmed', 
                                                  id = .x, 
                                                  rettype = 'xml', 
@@ -173,7 +173,7 @@ get_records <- function(search_terms,
     #-- Surname ----------------------------------------------------------#
 
     surname_path <- purrr::map(record, 
-                               ~ xml2::xml_path(xml2::xml_find_all(.x, './/LastName')))
+                               ~ xml2::xml_path(xml2::xml_find_all(.x, './/LastName'))) 
 
     #-- Initials ---------------------------------------------------------#
 
@@ -465,7 +465,6 @@ get_records <- function(search_terms,
                                          pages = as.character()))
     }
     
-
     #-- PMID --------------------------------------------------------#
 
     # Define vector for journal volume
@@ -550,48 +549,64 @@ get_records <- function(search_terms,
 
     #-- Make into dataframe ----------------------------------------------#
     
-    suppressMessages(joined <- purrr::map2(.x = surname,
-                          .y = initials,
-                          ~ dplyr::left_join(.x, .y)) %>% 
-        purrr::map2(.x = .,
-                    .y = title,
-                    ~ dplyr::left_join(.x, .y)) %>% 
-        purrr::map2(.x = .,
-                    .y = journal,
-                    ~ dplyr::left_join(.x, .y)) %>%
-        purrr::map2(.x = .,
-                    .y = status,
-                    ~ dplyr::left_join(.x, .y)) %>%
-        purrr::map2(.x = .,
-                    .y = volume,
-                    ~ dplyr::left_join(.x, .y)) %>%
-        purrr::map2(.x = .,
-                    .y = pages,
-                    ~ dplyr::left_join(.x, .y)) %>%
-        purrr::map2(.x = .,
-                    .y = year_published,
-                    ~ dplyr::left_join(.x, .y)) %>%
-        purrr::map2(.x = .,
-                    .y = year_online,
-                    ~ dplyr::left_join(.x, .y)) %>%
-        purrr::map2(.x = .,
-                    .y = pmid,
-                    ~ dplyr::left_join(.x, .y)) %>%
-        purrr::map2(.x = .,
-                    .y = doi,
-                    ~ dplyr::left_join(.x, .y)) %>% 
-        purrr::map2(.x = .,
-                    .y = abstract,
-                    ~ dplyr::left_join(.x, .y)))
+    suppressMessages(join_1 <- purrr::map2(.x = pmid,
+                                           .y = doi,
+                                           ~ dplyr::left_join(.x, .y)) %>% 
+                         purrr::map2(.x = .,
+                                     .y = title,
+                                     ~ dplyr::left_join(.x, .y)) %>%
+                         purrr::map2(.x = .,
+                                     .y = journal,
+                                     ~ dplyr::left_join(.x, .y)) %>%
+                         purrr::map2(.x = .,
+                                     .y = status,
+                                     ~ dplyr::left_join(.x, .y)) %>%
+                         purrr::map2(.x = .,
+                                     .y = volume,
+                                     ~ dplyr::left_join(.x, .y)) %>%
+                         purrr::map2(.x = .,
+                                     .y = pages,
+                                     ~ dplyr::left_join(.x, .y)) %>%
+                         purrr::map2(.x = .,
+                                     .y = year_published,
+                                     ~ dplyr::left_join(.x, .y)) %>%
+                         purrr::map2(.x = .,
+                                     .y = year_online,
+                                     ~ dplyr::left_join(.x, .y)) %>%
+                         purrr::map2(.x = .,
+                                     .y = abstract,
+                                     ~ dplyr::left_join(.x, .y)) %>% 
+                         purrr::map(.x = .,
+                                    ~ filter(.x, !is.na(article_node))) %>% 
+                         purrr::map(.x = .,
+                                    ~ select(.x, 
+                                             article_node, title, journal,
+                                             status, volume, pages, 
+                                             year_published, year_online,
+                                             pmid, doi, abstract)))
     
-    joined <- dplyr::bind_rows(joined) %>% 
-        dplyr::select(-counter, -article_node)
+    suppressMessages(join_2 <- purrr::map2(.x = surname,
+                                           .y = initials,
+                                           ~ dplyr::left_join(.x, .y)) %>%  
+                         purrr::map(.x = .,
+                                    ~ filter(.x, !is.na(article_node))) %>% 
+                         purrr::map(.x = .,
+                                    ~ select(.x, 
+                                             article_node, surname, initials)))
+    
+    suppressMessages(join_3 <- purrr::map2(.x = join_2,
+                                           .y = join_1,
+                                           ~ dplyr::full_join(.x, .y)))
+        
+    
+    suppressMessages(
+        join_3 <- dplyr::bind_rows(join_3)) 
         
     empty_as_na <- function(x){
         ifelse(x == '', yes = NA, no = x)
     }
 
-    joined <- joined %>%
+    join_3 <- join_3 %>%
         dplyr::mutate(surname = as.character(surname),
                       initials = as.character(initials),
                       title = as.character(title),
@@ -606,12 +621,11 @@ get_records <- function(search_terms,
                       abstract = as.character(abstract)) %>%
         dplyr::mutate_all(.funs = trimws) %>%
         dplyr::mutate_all(.funs = empty_as_na) %>%
-        dplyr::mutate(year_published = as.numeric(year_published),
-                      year_online = as.numeric(year_online)) %>% 
+        dplyr::select(-article_node) %>% 
         dplyr::as_tibble()
     
     #-- Output ----------------------------------------------------------------#
 
-    return(joined)
+    return(join_3)
 }
 
