@@ -7,7 +7,7 @@
 
 ## About
 
-This package provides tools to download records from the NCBI [PubMed](https://www.ncbi.nlm.nih.gov/pubmed/) database based on user-specified search criteria, and to add CrossRef citation data for the returned records. The output is in tidy data format, facilitating downstream analysis using tools from the 'tidyverse'.
+This package provides tools to download records from the NCBI [PubMed](https://www.ncbi.nlm.nih.gov/pubmed/) database based on user-specified search criteria, and to add CrossRef citation data for the returned records. The output is in tidy dataframe format, facilitating downstream analysis using tools from the 'tidyverse'.
 
 ## Installation
 
