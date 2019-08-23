@@ -82,8 +82,8 @@ count_records <- function(search_terms,
     
     # Throw a warning if number of records is > 200
     if(record_count < 1000) {
-        cat(paste(record_count, 'records will be retrieved.'))
+        cat(paste('An estimated', record_count, 'records will be retrieved.'))
     } else {
-        cat(paste(record_count, 'records will be retrieved. This will take a long time to download, and I recommend that you refine your search'))
+        cat(paste('An estimated', record_count, 'records will be retrieved. This is a lot of records and may take a while, so refine your search or go grab a cup of coffee or tea while you wait.'))
     }
 }
