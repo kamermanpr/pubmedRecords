@@ -552,37 +552,37 @@ get_records <- function(search_terms,
     
     suppressMessages(joined <- purrr::map2(.x = surname,
                           .y = initials,
-                          ~ left_join(.x, .y)) %>% 
+                          ~ dplyr::left_join(.x, .y)) %>% 
         purrr::map2(.x = .,
                     .y = title,
-                    ~ left_join(.x, .y)) %>% 
+                    ~ dplyr::left_join(.x, .y)) %>% 
         purrr::map2(.x = .,
                     .y = journal,
-                    ~ left_join(.x, .y)) %>%
+                    ~ dplyr::left_join(.x, .y)) %>%
         purrr::map2(.x = .,
                     .y = status,
-                    ~ left_join(.x, .y)) %>%
+                    ~ dplyr::left_join(.x, .y)) %>%
         purrr::map2(.x = .,
                     .y = volume,
-                    ~ left_join(.x, .y)) %>%
+                    ~ dplyr::left_join(.x, .y)) %>%
         purrr::map2(.x = .,
                     .y = pages,
-                    ~ left_join(.x, .y)) %>%
+                    ~ dplyr::left_join(.x, .y)) %>%
         purrr::map2(.x = .,
                     .y = year_published,
-                    ~ left_join(.x, .y)) %>%
+                    ~ dplyr::left_join(.x, .y)) %>%
         purrr::map2(.x = .,
                     .y = year_online,
-                    ~ left_join(.x, .y)) %>%
+                    ~ dplyr::left_join(.x, .y)) %>%
         purrr::map2(.x = .,
                     .y = pmid,
-                    ~ left_join(.x, .y)) %>%
+                    ~ dplyr::left_join(.x, .y)) %>%
         purrr::map2(.x = .,
                     .y = doi,
-                    ~ left_join(.x, .y)) %>% 
+                    ~ dplyr::left_join(.x, .y)) %>% 
         purrr::map2(.x = .,
                     .y = abstract,
-                    ~ left_join(.x, .y)))
+                    ~ dplyr::left_join(.x, .y)))
     
     joined <- dplyr::bind_rows(joined) %>% 
         dplyr::select(-counter, -article_node)
