@@ -139,10 +139,6 @@ get_records <- function(search_terms,
     record_split <- split(record_ID, 
                           rep_len(1:splits, length(record_ID)))
     
-    # Collapse into a single string
-    # record_pmid <- purrr::map(record_split,
-    #                           ~ paste(.x, collapse = ','))
-
     #-- Download pubmed xml record ---------------------------------------#
     
     if(!is.null(api_key)) {
@@ -606,7 +602,8 @@ get_records <- function(search_terms,
         ifelse(x == '', yes = NA, no = x)
     }
 
-    join_3 <- join_3 %>%
+    suppressMessages(
+        join_3 <- join_3 %>%
         dplyr::mutate(surname = as.character(surname),
                       initials = as.character(initials),
                       title = as.character(title),
@@ -622,7 +619,7 @@ get_records <- function(search_terms,
         dplyr::mutate_all(.funs = trimws) %>%
         dplyr::mutate_all(.funs = empty_as_na) %>%
         dplyr::select(-article_node) %>% 
-        dplyr::as_tibble()
+        dplyr::as_tibble())
     
     #-- Output ----------------------------------------------------------------#
 
