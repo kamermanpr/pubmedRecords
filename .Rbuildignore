@@ -6,3 +6,6 @@
 ^\.travis\.yml$
 ^LICENSE\.md$
 ^appveyor\.yml$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
