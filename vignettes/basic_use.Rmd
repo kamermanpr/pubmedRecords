@@ -61,9 +61,9 @@ The function parameters are:
 - **max_date:** A character string in the format _'YYYY/MM/DD'_, _'YYYY/MM'_ or _'YYYY'_ specifying the end date of the search. The default value is `Sys.Date()`.
 
 - **date_type:** A character string specifying the publication date type that is being specified in the search. Available values are:  
-  - \[PDAT]: Date the article was published (default)  
-  - \[MDAT]: Date the PubMed entry was modified.
-  - \[EDAT]: Date the entry was added to PubMed.
+  - PDAT: Date the article was published (default)  
+  - MDAT: Date the PubMed entry was modified.
+  - EDAT: Date the entry was added to PubMed.
 
 - **has_abstract:** Logical specifying whether the returned records should be limited to those records that have an abstract. The default value is _TRUE_.
 
