@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Basic use • pubmedRecords</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Basic use">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
@@ -30,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pubmedRecords</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
       </span>
     </div>
 
@@ -38,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -61,7 +62,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/kamermanpr/pubmedRecords">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -74,7 +75,8 @@
 <!--/.navbar -->
 
       
-      </header><script src="basic_use_files/htmlwidgets-1.3/htmlwidgets.js"></script><link href="basic_use_files/wordcloud2-0.0.1/wordcloud.css" rel="stylesheet">
+
+      </header><script src="basic_use_files/htmlwidgets-1.5.1/htmlwidgets.js"></script><link href="basic_use_files/wordcloud2-0.0.1/wordcloud.css" rel="stylesheet">
 <script src="basic_use_files/wordcloud2-0.0.1/wordcloud2-all.js"></script><script src="basic_use_files/wordcloud2-0.0.1/hover.js"></script><script src="basic_use_files/wordcloud2-binding-0.2.1/wordcloud2.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
@@ -98,9 +100,9 @@
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># install.packages("devtools")</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co"># devtools::install_github("kamermanpr/pubmedRecords")</span></a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(pubmedRecords)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(pubmedRecords)</a>
 <a class="sourceLine" id="cb1-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(dplyr)</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(dplyr)</a>
 <a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb1-8" data-line-number="8"><span class="co">#&gt; Attaching package: 'dplyr'</span></a>
 <a class="sourceLine" id="cb1-9" data-line-number="9"><span class="co">#&gt; The following objects are masked from 'package:stats':</span></a>
@@ -109,10 +111,10 @@
 <a class="sourceLine" id="cb1-12" data-line-number="12"><span class="co">#&gt; The following objects are masked from 'package:base':</span></a>
 <a class="sourceLine" id="cb1-13" data-line-number="13"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb1-14" data-line-number="14"><span class="co">#&gt;     intersect, setdiff, setequal, union</span></a>
-<a class="sourceLine" id="cb1-15" data-line-number="15"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(stringr)</a>
-<a class="sourceLine" id="cb1-16" data-line-number="16"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyr)</a>
-<a class="sourceLine" id="cb1-17" data-line-number="17"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidytext)</a>
-<a class="sourceLine" id="cb1-18" data-line-number="18"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(wordcloud2)</a></code></pre></div>
+<a class="sourceLine" id="cb1-15" data-line-number="15"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(stringr)</a>
+<a class="sourceLine" id="cb1-16" data-line-number="16"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(tidyr)</a>
+<a class="sourceLine" id="cb1-17" data-line-number="17"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(tidytext)</a>
+<a class="sourceLine" id="cb1-18" data-line-number="18"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(wordcloud2)</a></code></pre></div>
 </div>
 <div id="step-2" class="section level3">
 <h3 class="hasAnchor">
@@ -139,14 +141,14 @@ For a full set of search fields tags: <a href="https://www.ncbi.nlm.nih.gov/book
 </li>
 <li><p><strong>pub_type:</strong> A character string specifying the type of publication the search must return. The default value is <em>‘journal article’</em>. For more information: <a href="https://www.ncbi.nlm.nih.gov/books/NBK3827/table/pubmedhelp.T.publication_types/?report=objectonly">PubMed article types</a>.</p></li>
 <li><p><strong>min_date:</strong> A character string in the format <em>‘YYYY/MM/DD’</em>, <em>‘YYYY/MM’</em> or <em>‘YYYY’</em> specifying the starting date of the search. The default value is <em>1966/01/01’</em>.</p></li>
-<li><p><strong>max_date:</strong> A character string in the format <em>‘YYYY/MM/DD’</em>, <em>‘YYYY/MM’</em> or <em>‘YYYY’</em> specifying the end date of the search. The default value is <code><a href="https://www.rdocumentation.org/packages/base/topics/Sys.time">Sys.Date()</a></code>.</p></li>
+<li><p><strong>max_date:</strong> A character string in the format <em>‘YYYY/MM/DD’</em>, <em>‘YYYY/MM’</em> or <em>‘YYYY’</em> specifying the end date of the search. The default value is <code><a href="https://rdrr.io/r/base/Sys.time.html">Sys.Date()</a></code>.</p></li>
 <li>
 <strong>date_type:</strong> A character string specifying the publication date type that is being specified in the search. Available values are:
 <ul>
-<li>[PDAT]: Date the article was published (default)<br>
+<li>PDAT: Date the article was published (default)<br>
 </li>
-<li>[MDAT]: Date the PubMed entry was modified.</li>
-<li>[EDAT]: Date the entry was added to PubMed.</li>
+<li>MDAT: Date the PubMed entry was modified.</li>
+<li>EDAT: Date the entry was added to PubMed.</li>
 </ul>
 </li>
 <li><p><strong>has_abstract:</strong> Logical specifying whether the returned records should be limited to those records that have an abstract. The default value is <em>TRUE</em>.</p></li>
@@ -163,7 +165,7 @@ For a full set of search fields tags: <a href="https://www.ncbi.nlm.nih.gov/book
 <a class="sourceLine" id="cb2-8" data-line-number="8">            <span class="dt">date_type =</span> <span class="st">'PDAT'</span>)</a></code></pre></div>
 <p>Have a quick look at the output.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Print first 10 lines</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(df)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(df)</a>
 <a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">#&gt; # A tibble: 13,544 x 12</span></a>
 <a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">#&gt;    surname initials title journal status volume pages year_published</span></a>
 <a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt;    &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;         </span></a>
@@ -201,7 +203,7 @@ For a full set of search fields tags: <a href="https://www.ncbi.nlm.nih.gov/book
 <p>Although not essential for this example, you can added CrossRef citation counts to the records using the <code>citation_metrics</code> function. This function requires you to pass to it the output from <code>get_records</code>.</p>
 <p><strong>The addition of citations also can take a while if there are a lot of records</strong>.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># Add a column called "crossref_citations" to the first 6 observations</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">df_citations &lt;-<span class="st"> </span><span class="kw"><a href="../reference/get_citations.html">get_citations</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(df))</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">df_citations &lt;-<span class="st"> </span><span class="kw"><a href="../reference/get_citations.html">get_citations</a></span>(<span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(df))</a>
 <a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">#&gt; Joining, by = "pmid"</span></a>
 <a class="sourceLine" id="cb4-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co"># View structure</span></a>
@@ -220,7 +222,7 @@ For a full set of search fields tags: <a href="https://www.ncbi.nlm.nih.gov/book
 <a class="sourceLine" id="cb4-18" data-line-number="18"><span class="co">#&gt; $ pmid               &lt;dbl&gt; 29494416, 29494416, 29494416, 29494416, 29494…</span></a>
 <a class="sourceLine" id="cb4-19" data-line-number="19"><span class="co">#&gt; $ doi                &lt;chr&gt; "10.1097/j.pain.0000000000001190", "10.1097/j…</span></a>
 <a class="sourceLine" id="cb4-20" data-line-number="20"><span class="co">#&gt; $ abstract           &lt;chr&gt; "as an indirect approach to relate previously…</span></a>
-<a class="sourceLine" id="cb4-21" data-line-number="21"><span class="co">#&gt; $ crossref_citations &lt;dbl&gt; 10, 10, 10, 10, 10, 10</span></a></code></pre></div>
+<a class="sourceLine" id="cb4-21" data-line-number="21"><span class="co">#&gt; $ crossref_citations &lt;dbl&gt; 13, 13, 13, 13, 13, 13</span></a></code></pre></div>
 <hr>
 </div>
 <div id="step-3" class="section level3">
@@ -234,27 +236,27 @@ For a full set of search fields tags: <a href="https://www.ncbi.nlm.nih.gov/book
 <a class="sourceLine" id="cb5-2" data-line-number="2"><span class="st">  </span><span class="co"># Select the title column</span></a>
 <a class="sourceLine" id="cb5-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(title) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb5-4" data-line-number="4"><span class="st">  </span><span class="co"># extract unique entries only</span></a>
-<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/unique">unique</a></span>(.)</a></code></pre></div>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(.)</a></code></pre></div>
 </div>
 <div id="second-extract-2-ngrams" class="section level4">
 <h4 class="hasAnchor">
 <a href="#second-extract-2-ngrams" class="anchor"></a>Second, extract 2-ngrams</h4>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">tidy_words &lt;-<span class="st"> </span>words <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/tidytext/topics/unnest_tokens">unnest_tokens</a></span>(word, title, <span class="dt">token =</span> <span class="st">"ngrams"</span>, <span class="dt">n =</span> <span class="dv">2</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="st">    </span><span class="kw"><a href="https://rdrr.io/pkg/tidytext/man/unnest_tokens.html">unnest_tokens</a></span>(word, title, <span class="dt">token =</span> <span class="st">"ngrams"</span>, <span class="dt">n =</span> <span class="dv">2</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb6-3" data-line-number="3"><span class="st">    </span><span class="co"># Remove stopwords</span></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="st">    </span><span class="kw"><a href="https://tidyr.tidyverse.org/reference/separate.html">separate</a></span>(word, <span class="dt">into =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'word1'</span>, <span class="st">'word2'</span>), <span class="dt">sep =</span> <span class="st">' '</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="st">    </span><span class="kw"><a href="https://tidyr.tidyverse.org/reference/separate.html">separate</a></span>(word, <span class="dt">into =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'word1'</span>, <span class="st">'word2'</span>), <span class="dt">sep =</span> <span class="st">' '</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb6-5" data-line-number="5"><span class="st">    </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="op">!</span>word1 <span class="op">%in%</span><span class="st"> </span>stop_words<span class="op">$</span>word) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb6-6" data-line-number="6"><span class="st">    </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="op">!</span>word2 <span class="op">%in%</span><span class="st"> </span>stop_words<span class="op">$</span>word) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb6-7" data-line-number="7"><span class="st">    </span><span class="co"># Convert terms containing numerals to NA</span></a>
-<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="st">    </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">word1 =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ifelse">ifelse</a></span>(<span class="kw"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span>(word1, <span class="st">'[0-9]'</span>),</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="st">    </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">word1 =</span> <span class="kw"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span>(<span class="kw"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span>(word1, <span class="st">'[0-9]'</span>),</a>
 <a class="sourceLine" id="cb6-9" data-line-number="9">                         <span class="dt">yes =</span> <span class="ot">NA</span>,</a>
-<a class="sourceLine" id="cb6-10" data-line-number="10">                         <span class="dt">no =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste</a></span>(word1))) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb6-11" data-line-number="11"><span class="st">    </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">word2 =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ifelse">ifelse</a></span>(<span class="kw"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span>(word2, <span class="st">'[0-9]'</span>),</a>
+<a class="sourceLine" id="cb6-10" data-line-number="10">                         <span class="dt">no =</span> <span class="kw"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(word1))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-11" data-line-number="11"><span class="st">    </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">word2 =</span> <span class="kw"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span>(<span class="kw"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span>(word2, <span class="st">'[0-9]'</span>),</a>
 <a class="sourceLine" id="cb6-12" data-line-number="12">                          <span class="dt">yes =</span> <span class="ot">NA</span>,</a>
-<a class="sourceLine" id="cb6-13" data-line-number="13">                          <span class="dt">no =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste</a></span>(word2))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-13" data-line-number="13">                          <span class="dt">no =</span> <span class="kw"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(word2))) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb6-14" data-line-number="14"><span class="st">    </span><span class="co"># Remove NA</span></a>
-<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="st">    </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NA">is.na</a></span>(word1)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb6-16" data-line-number="16"><span class="st">    </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NA">is.na</a></span>(word2)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="st">    </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(word1)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-16" data-line-number="16"><span class="st">    </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(word2)) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb6-17" data-line-number="17"><span class="st">    </span><span class="co"># Join word columns them back together to form 2-ngrams</span></a>
 <a class="sourceLine" id="cb6-18" data-line-number="18"><span class="st">    </span><span class="kw"><a href="https://tidyr.tidyverse.org/reference/unite.html">unite</a></span>(word, word1, word2, <span class="dt">sep =</span> <span class="st">' '</span>)</a></code></pre></div>
 </div>
@@ -271,20 +273,22 @@ For a full set of search fields tags: <a href="https://www.ncbi.nlm.nih.gov/book
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">word_cloud &lt;-<span class="st"> </span>ngram_count[<span class="dv">1</span><span class="op">:</span><span class="dv">150</span>, ] <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb8-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">rename</a></span>(<span class="dt">freq =</span> n)</a>
 <a class="sourceLine" id="cb8-3" data-line-number="3">  </a>
-<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/wordcloud2/topics/wordcloud2">wordcloud2</a></span>(<span class="dt">data =</span> word_cloud,</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="kw"><a href="https://rdrr.io/pkg/wordcloud2/man/wordcloud2.html">wordcloud2</a></span>(<span class="dt">data =</span> word_cloud,</a>
 <a class="sourceLine" id="cb8-5" data-line-number="5">           <span class="dt">fontFamily =</span> <span class="st">'arial'</span>,</a>
 <a class="sourceLine" id="cb8-6" data-line-number="6">           <span class="dt">size =</span> <span class="fl">0.4</span>,</a>
-<a class="sourceLine" id="cb8-7" data-line-number="7">           <span class="dt">color =</span> ggthemes<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggthemes/topics/tableau_color_pal">tableau_color_pal</a></span>(<span class="dt">palette =</span> <span class="st">'Color Blind'</span>)(<span class="dv">10</span>))</a></code></pre></div>
-<div id="htmlwidget-dff74f341cd445a71e69" style="width:864px;height:672px;" class="wordcloud2 html-widget"></div>
-<script type="application/json" data-for="htmlwidget-dff74f341cd445a71e69">{"x":{"word":["neuropathic pain","quantitative sensory","sensory testing","german research","pain dfns","peripheral neuropathic","research network","borderline personality","chronic pain","evoked potentials","human surrogate","pain ratings","personality disorder","term potentiation","central sensitization","clinical trials","complex regional","frequency stimulation","healthy volunteers","laser evoked","neurogenic hyperalgesia","nociceptive pathways","nonspecific chronic","pain models","pain modulation","pain pain","pain perception","pain syndrome","pain thresholds","potentiation ltp","pressure pain","reference data","regional pain","sensory loss","sensory profiles","surrogate pain","thoracolumbar fascia","activation patterns","acute stresslike","adult patients","altered pressure","amplification neuropathic","analgesic drug","analgesic drugs","anti neglect","arterial disease","assay sensitivity","assessment quantitative","attention novelty","attentional modulation","attenuates amplitudes","augments pain","automated evaluation","based recommendations","based studies","basic pain","behavior laser","behavioural study","biological markers","blunt pressure","brain sensory","burrowing behaviour","capsaicin induced","central activation","central components","central disinhibition","centre replication","centre study","changed pain","chemotherapy induced","childhood maltreatment","chronic local","chronic noncancer","chronic postherpetic","chronic widespread","classical hemi","clinical perspective","clinical practice","clinical relevance","cold pressor","combat related","comparative behavioural","concept chronic","conditioned pain","consensus statement","consortia world","control mechanisms","correlational analysis","cortical representation","cortico subcortical","cross centre","cross sectional","cutaneous nociceptive","data neupsig","declared healthy","delayed ratings","deprivation promotes","development depression","dfns protocol","dfns reference","dfns somatosensory","dfns standardized","differential nociceptive","diode laser","discriminative components","disease continuum","disease quantitative","disinhibition mechanism","disorder conditioned","disorder experimental","disorder explicit","disorders neupsig","distinct mechanisms","distinct quantitative","dorsal horn","drug development","drugs morphine","emission tomography","emotional modulation","endogenous pain","endurance athletes","entities answers","episodic memory","essential medicines","ethologically relevant","evaluation tool","evidence based","evoked potential","experimental characterization","experimental pain","experimental study","explicit episodic","facilitate analgesic","fascia evokes","fibromyalgia peripheral","fibromyalgia syndrome","frontal cortex","function pharmacologic","functional characterization","functional sensory","gabapentin numbness","gain control","generalized hyperalgesia","gold standard","grading system","growth factor","health organization","healthy aspects","healthy samples","healthy subjects"],"freq":[17,13,13,4,4,4,4,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"fontFamily":"arial","fontWeight":"bold","color":["#1170aa","#fc7d0b","#a3acb9","#57606c","#5fa2ce","#c85200","#7b848f","#a3cce9","#ffbc79","#c8d0d9"],"minSize":0,"weightFactor":4.23529411764706,"backgroundColor":"white","gridSize":0,"minRotation":-0.785398163397448,"maxRotation":0.785398163397448,"shuffle":true,"rotateRatio":0.4,"shape":"circle","ellipticity":0.65,"figBase64":null,"hover":null},"evals":[],"jsHooks":{"render":[{"code":"function(el,x){\n                        console.log(123);\n                        if(!iii){\n                          window.location.reload();\n                          iii = False;\n\n                        }\n  }","data":null}]}}</script>
+<a class="sourceLine" id="cb8-7" data-line-number="7">           <span class="dt">color =</span> ggthemes<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/ggthemes/man/tableau_color_pal.html">tableau_color_pal</a></span>(<span class="dt">palette =</span> <span class="st">'Color Blind'</span>)(<span class="dv">10</span>))</a></code></pre></div>
+<div id="htmlwidget-9366d5badd0fe2b86a53" style="width:864px;height:672px;" class="wordcloud2 html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9366d5badd0fe2b86a53">{"x":{"word":["neuropathic pain","quantitative sensory","sensory testing","german research","pain dfns","peripheral neuropathic","research network","borderline personality","chronic pain","evoked potentials","human surrogate","pain ratings","personality disorder","term potentiation","central sensitization","clinical trials","complex regional","frequency stimulation","healthy volunteers","laser evoked","neurogenic hyperalgesia","nociceptive pathways","nonspecific chronic","pain models","pain modulation","pain pain","pain perception","pain syndrome","pain thresholds","potentiation ltp","pressure pain","reference data","regional pain","sensory loss","sensory profiles","surrogate pain","thoracolumbar fascia","activation patterns","acute stresslike","adult patients","altered pressure","amplification neuropathic","analgesic drug","analgesic drugs","anti neglect","arterial disease","assay sensitivity","assessment quantitative","attention novelty","attentional modulation","attenuates amplitudes","augments pain","automated evaluation","based recommendations","based studies","basic pain","behavior laser","behavioural study","biological markers","blunt pressure","brain sensory","burrowing behaviour","capsaicin induced","central activation","central components","central disinhibition","centre replication","centre study","changed pain","chemotherapy induced","childhood maltreatment","chronic local","chronic noncancer","chronic postherpetic","chronic widespread","classical hemi","clinical perspective","clinical practice","clinical relevance","cold pressor","combat related","comparative behavioural","concept chronic","conditioned pain","consensus statement","consortia world","control mechanisms","correlational analysis","cortical representation","cortico subcortical","cross centre","cross sectional","cutaneous nociceptive","data neupsig","declared healthy","delayed ratings","deprivation promotes","development depression","dfns protocol","dfns reference","dfns somatosensory","dfns standardized","differential nociceptive","diode laser","discriminative components","disease continuum","disease quantitative","disinhibition mechanism","disorder conditioned","disorder experimental","disorder explicit","disorders neupsig","distinct mechanisms","distinct quantitative","dorsal horn","drug development","drugs morphine","emission tomography","emotional modulation","endogenous pain","endurance athletes","entities answers","episodic memory","essential medicines","ethologically relevant","evaluation tool","evidence based","evoked potential","experimental characterization","experimental pain","experimental study","explicit episodic","facilitate analgesic","fascia evokes","fibromyalgia peripheral","fibromyalgia syndrome","frontal cortex","function pharmacologic","functional characterization","functional sensory","gabapentin numbness","gain control","generalized hyperalgesia","gold standard","grading system","growth factor","health organization","healthy aspects","healthy samples","healthy subjects"],"freq":[17,13,13,4,4,4,4,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"fontFamily":"arial","fontWeight":"bold","color":["#1170aa","#fc7d0b","#a3acb9","#57606c","#5fa2ce","#c85200","#7b848f","#a3cce9","#ffbc79","#c8d0d9"],"minSize":0,"weightFactor":4.23529411764706,"backgroundColor":"white","gridSize":0,"minRotation":-0.785398163397448,"maxRotation":0.785398163397448,"shuffle":true,"rotateRatio":0.4,"shape":"circle","ellipticity":0.65,"figBase64":null,"hover":null},"evals":[],"jsHooks":{"render":[{"code":"function(el,x){\n                        console.log(123);\n                        if(!iii){\n                          window.location.reload();\n                          iii = False;\n\n                        }\n  }","data":null}]}}</script>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
       </div>
 
 </div>
+
 
 
       <footer><div class="copyright">
@@ -292,12 +296,14 @@ For a full set of search fields tags: <a href="https://www.ncbi.nlm.nih.gov/book
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>
