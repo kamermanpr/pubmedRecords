@@ -11,12 +11,12 @@ count_records(search_terms, pub_type = "journal article",
 \arguments{
 \item{search_terms}{A character string of terms that define the scope of the PubMed database query. Boolean operators \emph{(AND, OR, NOT)} and search field tags may be used to create more complex search criteria. Commonly used search fields tags include:
 \describe{
-\item{TI}{Word in title}
-\item{TIAB}{Word in title or abstract}
-\item{MH}{Medical Subject Heading (MeSH)}
-\item{AU}{Author name (e.g., Doe J)}
-\item{AD}{Author institutional affiliation}
-\item{TA}{Journal title (e.g., J Pain)}
+\item{[TI]}{Word in title}
+\item{[TIAB]}{Word in title or abstract}
+\item{[MH]}{Medical Subject Heading (MeSH)}
+\item{[AU]}{Author name (e.g., Doe J)}
+\item{[AD]}{Author institutional affiliation}
+\item{[TA]}{Journal title (e.g., J Pain)}
 }
 
 For a full set of search fields tags: \href{https://www.ncbi.nlm.nih.gov/books/NBK3827/#_pubmedhelp_Search_Field_Descriptions_and_}{PubMed search field tags}. Note that the article publication type, date type, and date range are modified using the \code{pub_type}, \code{date_type}, \code{min_date} and \code{max_date} arguments below.}
