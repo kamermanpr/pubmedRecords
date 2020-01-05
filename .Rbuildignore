@@ -3,9 +3,7 @@
 ^\.Rproj\.user$
 ^data-raw$
 ^tests/
-^\.travis\.yml$
 ^LICENSE\.md$
-^appveyor\.yml$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
