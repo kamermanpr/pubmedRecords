@@ -1,8 +1,8 @@
 Package: pubmedRecords
 Type: Package
 Title: Get and format NCBI PubMed records and their associated bibliometric data as tidy data
-Version: 0.1.6
-Date: 2019-08-19
+Version: 0.1.7
+Date: 2023-01-11
 Author: Peter Kamerman <peter.kamerman@gmail.com>
 Maintainer: Peter Kamerman <peter.kamerman@gmail.com>
 URL: https://github.com/kamermanpr/pubmedRecords
@@ -11,23 +11,8 @@ Description: This package provides tools to download records from the NCBI PubMe
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
-Depends: 
-	R (>= 3.3.3),
-Imports:
-        dplyr,
-	ggthemes,
-	magrittr,
-	purrr,
-	rcrossref,
-	rentrez,
-	stringr,
-	tibble,
-	tidytext,
-	tidyr,
-	wordcloud2,
-	xml2
-Suggests: 
-    knitr,
-    rmarkdown
+RoxygenNote: 7.2.3
+Depends: R (>= 3.3.3),
+Imports: dplyr, magrittr, purrr, rcrossref, rentrez, stringr, tibble, tidyselect, xml2
+Suggests: ggthemes, knitr, rmarkdown, tidyr, tidytext, wordcloud2
 VignetteBuilder: knitr

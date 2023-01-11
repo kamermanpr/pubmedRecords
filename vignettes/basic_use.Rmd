@@ -7,11 +7,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+```{r setup, include = FALSE}
+library(pubmedRecords)
+library(dplyr)
+library(ggthemes)
+library(stringr)
+library(tidyr)
+library(tidytext)
+library(wordcloud2)
 ```
 
 This package provides tools to download records from the NCBI PubMed database based on user-specified search criteria, and to add CrossRef citation data for the returned records. The output is in tidy data format, facilitating downstream analysis using tools from the 'tidyverse'.
@@ -22,9 +25,9 @@ I will be using Prof Rolf-Detlef Treede, a renowned scientist in the field of pa
 
 ### Step 1
 
-Load the packages
+Load the packages required for this vignette.
 
-```{r setup}
+```{r setup_demo, eval = FALSE}
 # install.packages("devtools")
 # devtools::install_github("kamermanpr/pubmedRecords")
 
@@ -77,13 +80,13 @@ The function parameters are:
 df <- get_records(search_terms = "Treede RD[AU] AND Pain[TA]",
             min_date = '2000/01/01',
             max_date = '2018/12/31',
-            api_key = 'your_api_key_if_you_have_one',
+            api_key = NULL, # Add only if you have one (see documentation)
             pub_type = 'journal article',
             date_type = 'PDAT')
 ```
 
 ```{r search_1, echo = FALSE}
-df <- get_records(search_terms = "Treede RD[AU] AND Pain[TA]",
+df <- get_records(search_terms = "Treede RD[AU]",
             min_date = '2000/01/01',
             max_date = '2018/12/31',
             pub_type = 'journal article',
@@ -163,16 +166,16 @@ ngram_count <- tidy_words %>%
     arrange(desc(n))
 ```
 
-#### Fourth, strip out the top 200 2-ngrams and plot
+#### Fourth, strip out the top 100 2-ngrams and plot
 
 ```{r plot, fig.width = 9, fig.height = 7}
-word_cloud <- ngram_count[1:150, ] %>% 
+word_cloud <- ngram_count[1:100, ] %>% 
   rename(freq = n)
   
 wordcloud2(data = word_cloud,
            fontFamily = 'arial',
            size = 0.4,
-           color = ggthemes::tableau_color_pal(palette = 'Color Blind')(10))
+           color = tableau_color_pal(palette = 'Color Blind')(10))
 ```
 
 

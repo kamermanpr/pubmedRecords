@@ -4,9 +4,14 @@
 \alias{get_records}
 \title{Get PubMed records.}
 \usage{
-get_records(search_terms, pub_type = "journal article", api_key = NULL,
-  date_type = "PDAT", min_date = "1966/01/01",
-  max_date = format(Sys.Date(), "\%Y/\%m/\%d"))
+get_records(
+  search_terms,
+  pub_type = "journal article",
+  api_key = NULL,
+  date_type = "PDAT",
+  min_date = "1966/01/01",
+  max_date = format(Sys.Date(), "\%Y/\%m/\%d")
+)
 }
 \arguments{
 \item{search_terms}{A character string of terms that define the scope of the PubMed database query. Boolean operators \emph{(AND, OR, NOT)} and search field tags may be used to create more complex search criteria. Commonly used search fields tags include:
@@ -57,6 +62,7 @@ A wrapper around \code{\link[rentrez]{entrez_fetch}}, \code{get_records} fetches
 \seealso{
 \code{\link[rentrez]{entrez_search}} and \code{\link[rentrez]{entrez_fetch}}
 
-Other related functions: \code{\link{count_records}}
+Other related functions: 
+\code{\link{count_records}()}
 }
 \concept{related functions}

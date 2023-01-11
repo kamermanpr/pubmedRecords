@@ -4,9 +4,14 @@
 \alias{count_records}
 \title{Retrieve the number of records returned by a query.}
 \usage{
-count_records(search_terms, pub_type = "journal article",
-  api_key = NULL, date_type = "PDAT", min_date = "1966/01/01",
-  max_date = format(Sys.Date(), "\%Y/\%m/\%d"))
+count_records(
+  search_terms,
+  pub_type = "journal article",
+  api_key = NULL,
+  date_type = "PDAT",
+  min_date = "1966/01/01",
+  max_date = format(Sys.Date(), "\%Y/\%m/\%d")
+)
 }
 \arguments{
 \item{search_terms}{A character string of terms that define the scope of the PubMed database query. Boolean operators \emph{(AND, OR, NOT)} and search field tags may be used to create more complex search criteria. Commonly used search fields tags include:
@@ -41,6 +46,7 @@ For a full set of search fields tags: \href{https://www.ncbi.nlm.nih.gov/books/N
 \seealso{
 \code{\link[rentrez]{entrez_search}}
 
-Other related functions: \code{\link{get_records}}
+Other related functions: 
+\code{\link{get_records}()}
 }
 \concept{related functions}
